@@ -1,6 +1,6 @@
 # Liga Copa Perú
 
-Aplicación web Maven con Java 21, Spring Boot 4.1.2, Spring MVC y Thymeleaf. PostgreSQL es el perfil predeterminado; `local` usa H2 en archivo y `sqlserver` permite conectar con SQL Server usando autenticación integrada de Windows.
+Aplicación web Maven con Java 25 LTS, Spring Boot 4.1.2, Spring MVC y Thymeleaf. PostgreSQL es el perfil predeterminado; `local` usa H2 en archivo y `sqlserver` permite conectar con SQL Server usando autenticación integrada de Windows.
 
 ## Alcance implementado
 
@@ -30,13 +30,13 @@ No se incluyen todavía fases eliminatorias avanzadas, generador automático de 
 
 ## Requisitos
 
-- JDK 21 LTS. El código apunta a Java 21; comprueba con `java -version`.
+- JDK 25 LTS. El código apunta a Java 25; comprueba con `java -version`.
 - Visual Studio Code con Extension Pack for Java y Spring Boot Extension Pack (recomendaciones en `.vscode/extensions.json`).
 - PostgreSQL local o administrado para el perfil predeterminado; SQL Server local está disponible mediante el perfil `sqlserver`.
 - Docker Desktop es opcional; se incluye `compose.yaml`.
 - Maven global no es necesario: usa Maven Wrapper.
 
-En Windows, instala Java 21 desde Eclipse Adoptium (Temurin) o una distribución oficial de OpenJDK. Por ejemplo, con `winget install EclipseAdoptium.Temurin.21.JDK`; después abre una terminal nueva y verifica `java -version` y `JAVA_HOME`. En este entorno de desarrollo se detectó JDK 25, no JDK 21; configura JDK 21 para validar la versión exacta requerida.
+En Windows, instala Java 25 desde Eclipse Adoptium (Temurin) o una distribución oficial de OpenJDK. Por ejemplo, con `winget install EclipseAdoptium.Temurin.25.JDK`; después abre una terminal nueva y verifica `java -version` y `JAVA_HOME`.
 
 ## Ejecutar en local para pruebas (recomendado)
 
@@ -147,7 +147,7 @@ Flyway mantiene las migraciones versionadas. PostgreSQL y H2 usan `src/main/reso
 
 ## Despliegue
 
-El proyecto produce un JAR Spring Boot ejecutable compatible con Java 21. En un proveedor Java o contenedor:
+El proyecto produce un JAR Spring Boot ejecutable compatible con Java 25. En un proveedor Java o contenedor:
 
 1. Construye el artefacto con `.\mvnw.cmd clean verify package`.
 2. Usa una base PostgreSQL administrada y configura `DB_URL`, `DB_USERNAME` y `DB_PASSWORD` como secretos del proveedor.
