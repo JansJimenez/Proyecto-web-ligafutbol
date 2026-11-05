@@ -1,0 +1,189 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks for the Azure modernization plan derived from assessment report report-20261029125046.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-runtime-to-25",
+      "description": "Upgrade the application runtime from Java 21 to Java 25 LTS. Addresses issues: Java Version is not the latest LTS.",
+      "reason": "The assessment identifies Java 21 as behind the latest LTS target, Java 25.",
+      "requirements": "Upgrade the Java runtime and build target to Java 25 LTS. Preserve Spring Boot 4.1.2 and existing application behavior; do not add unrelated framework upgrades. Verify the Maven build and existing unit tests with Java 25.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "setupBaseline",
+      "id": "000-setupBaseline",
+      "description": "Capture a frozen test baseline for the application before migration changes.",
+      "requirements": "Snapshot the project's src directory and use the snapshot to capture existing observable behavior and the external-dependency strategy for later integration verification.",
+      "snapshotFolder": "src"
+    },
+    {
+      "type": "transform",
+      "id": "002-transform-azure-sql-managed-identity",
+      "description": "Secure the SQL Server database configuration for Azure SQL using Managed Identity. Addresses issues: Microsoft SQL database found.",
+      "reason": "The assessment identifies a SQL Server database configuration that needs secure Azure access.",
+      "requirements": "Address the SQL Server datasource profile and connect it to Azure SQL Database using Managed Identity. Preserve the PostgreSQL and local database configurations. Do not store credentials, resource IDs, subscription IDs, or connection strings in this plan.",
+      "dependencies": [
+        "001-upgrade-java-runtime-to-25"
+      ],
+      "skills": [
+        {
+          "name": "migration-mi-azure-sql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "003-transform-auth-to-entra-id",
+      "description": "Migrate application user authentication from local Spring Security form login to Microsoft Entra ID. Addresses issues: Embedded framework - Spring Security.",
+      "reason": "The assessment recommends replacing on-premises user authentication with Microsoft Entra ID.",
+      "requirements": "Move the application's user sign-in to Microsoft Entra ID while preserving intended public and administrator access boundaries. Keep authorization behavior aligned with existing application roles and routes.",
+      "dependencies": [
+        "002-transform-azure-sql-managed-identity"
+      ],
+      "skills": [
+        {
+          "name": "migration-on-premises-user-authentication-to-microsoft-entra-id",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "004-transform-postgresql-managed-identity",
+      "description": "Secure the PostgreSQL database configuration for Azure Database for PostgreSQL using Managed Identity. Addresses issues: PostgreSQL database found.",
+      "reason": "The assessment identifies a PostgreSQL database configuration that needs secure Azure access.",
+      "requirements": "Address the PostgreSQL datasource configuration and connect it to Azure Database for PostgreSQL using Managed Identity. Preserve the separate SQL Server profile and local development configuration. Do not store credentials, resource IDs, subscription IDs, or connection strings in this plan.",
+      "dependencies": [
+        "003-transform-auth-to-entra-id"
+      ],
+      "skills": [
+        {
+          "name": "migration-mi-postgresql",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "005-transform-credentials-to-key-vault",
+      "description": "Remove plaintext credentials from configuration and Java source, using Azure Key Vault for secrets that remain necessary. Addresses issues: Password found in configuration file; CRA: Hard-coded password in Java source code.",
+      "reason": "The assessment identifies credentials in configuration and Java source that should not be embedded in the application.",
+      "requirements": "Remove plaintext and hard-coded credentials from the application. Use Azure Key Vault for required secrets and Managed Identity for access. Coordinate with database Managed Identity configuration so passwords eliminated by passwordless database access are not redundantly retained as secrets.",
+      "dependencies": [
+        "004-transform-postgresql-managed-identity"
+      ],
+      "skills": [
+        {
+          "name": "migration-plaintext-credential-to-azure-keyvault",
+          "location": "builtin"
+        }
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "006-transform-local-files-to-azure-file-share",
+      "description": "Move application-managed local files to mounted Azure Storage File Share paths. Addresses issues: File system - Java NIO.",
+      "reason": "The assessment identifies local Java NIO file storage that is not suitable as persistent storage for Azure-hosted instances.",
+      "requirements": "Use an Azure Storage File Share mount for application-managed uploads while preserving public-image and private-document behavior, safe file handling, and existing upload constraints. Keep local storage available for development where appropriate.",
+      "dependencies": [
+        "005-transform-credentials-to-key-vault"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "transform",
+      "id": "007-transform-jakarta-persistence-for-azure",
+      "description": "Address Jakarta Persistence compatibility for the selected Azure database targets. Addresses issues: Detects usage of Jakarta Persistence (JPA) APIs.",
+      "reason": "The assessment recommends preparing the application's Jakarta Persistence usage for Azure database services.",
+      "requirements": "Verify that the current Jakarta Persistence/JPA usage remains compatible with the Azure SQL and Azure Database for PostgreSQL configurations selected in this plan. Preserve existing entity and application behavior and avoid unrelated persistence redesign.",
+      "dependencies": [
+        "006-transform-local-files-to-azure-file-share"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "integrationTest",
+      "id": "008-integrationTest",
+      "description": "Build integration tests for migrated Azure services and run post-migration verification",
+      "reason": "The plan's default testing choice is mock mode because no Azure test infrastructure is configured.",
+      "requirements": "Generate and run integration tests for the migrated Azure service integrations in mock mode. Use the frozen baseline and verify the migrated behavior without storing Azure resource IDs, subscription IDs, or connection strings in this task plan.",
+      "dependencies": [
+        "000-setupBaseline",
+        "001-upgrade-java-runtime-to-25",
+        "002-transform-azure-sql-managed-identity",
+        "003-transform-auth-to-entra-id",
+        "004-transform-postgresql-managed-identity",
+        "005-transform-credentials-to-key-vault",
+        "006-transform-local-files-to-azure-file-share",
+        "007-transform-jakarta-persistence-for-azure"
+      ]
+    },
+    {
+      "type": "security",
+      "id": "009-security-cve-remediation",
+      "description": "Scan all project dependencies for known CVEs and remediate identified vulnerabilities before any future deployment.",
+      "reason": "Security and CVE remediation is included by default in every modernization plan.",
+      "requirements": "Upgrade vulnerable dependencies to the minimum patched version. If a fix requires a major version upgrade, document the affected dependency, current version, upgraded version, and breaking-change risk. Verify the project builds and all unit tests pass after remediation.",
+      "dependencies": [
+        "008-integrationTest"
+      ],
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "containerization",
+      "id": "010-containerize-java-application",
+      "description": "Create container packaging for the Java application to make it ready for a container-based Azure environment. Addresses issues: No Dockerfile found.",
+      "reason": "Containerization was selected from the assessment recommendations.",
+      "requirements": "Create a Dockerfile and container build configuration suitable for the modernized Java application. Do not provision Azure infrastructure or deploy the image as part of this task.",
+      "dockerfilePath": "Dockerfile (to be created)",
+      "dependencies": [
+        "009-security-cve-remediation"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "assessment-report-20261029125046",
+    "projectName": "liga-copa-peru",
+    "language": "java",
+    "createdAt": "2026-10-29T13:02:35-05:00",
+    "version": "1.0"
+  }
+}

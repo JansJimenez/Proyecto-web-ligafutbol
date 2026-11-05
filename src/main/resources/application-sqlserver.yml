@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://${SQLSERVER_HOST:JANSJIMENEZ}:${SQLSERVER_PORT:1433};databaseName=${SQLSERVER_DATABASE:liga_copa_peru};encrypt=true;trustServerCertificate=true
+    username: ${SQLSERVER_USERNAME:sa}
+    password: ${SQLSERVER_PASSWORD:Admin123456!}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    locations: classpath:db/sqlserver-migration
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: ${SESSION_COOKIE_SECURE:false}

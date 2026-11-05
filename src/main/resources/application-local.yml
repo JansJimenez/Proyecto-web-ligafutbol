@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/liga-copa-peru;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false

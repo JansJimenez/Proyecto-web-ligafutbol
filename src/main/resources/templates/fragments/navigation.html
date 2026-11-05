@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header th:fragment="publicNavigation" class="portal-header">
+  <div class="portal-topline"><div class="container d-flex justify-content-between align-items-center gap-3"><span>FÚTBOL QUE UNE AL PERÚ</span><a href="/login">Acceso para administradores <strong>↗</strong></a></div></div>
+  <div class="portal-masthead container">
+    <a class="portal-brand" href="/" aria-label="Inicio de la Liga Copa Perú"><img src="/images/copa-peru-logo.png" alt="Emblema Copa Perú"><span><strong>Liga Copa Perú</strong><small>La pasión nace en cada región</small></span></a>
+    <div class="portal-partner"><img src="/images/fpf-logo.png" alt="Federación Peruana de Fútbol"><span>Federación<br>Peruana de Fútbol</span></div>
+  </div>
+  <nav class="site-navigation" aria-label="Navegación principal">
+    <div class="container">
+      <button class="site-menu-toggle" type="button" aria-controls="publicNavMenu" aria-expanded="false" aria-label="Abrir navegación"><span></span><span></span><span></span></button>
+      <div class="site-nav-menu" id="publicNavMenu">
+        <a href="/">Inicio</a><a href="/partidos">Fixture</a><a href="/tabla">Tabla de posiciones</a><a href="/clubes">Clubes</a><a href="/equipos">Equipos</a><a href="/jugadores">Planteles</a><a href="/cuerpo-tecnico">Cuerpo técnico</a><a href="/estadisticas">Estadísticas</a><a href="/noticias">Noticias</a>
+      </div>
+    </div>
+  </nav>
+  <div class="navigation-loader" aria-hidden="true"><img src="/images/copa-peru-logo.png" alt=""><span class="loader-ball"></span><strong>Cargando información</strong></div>
+  <script defer src="/js/site.js"></script>
+</header>
+
+<header th:fragment="adminNavigation" class="admin-header">
+  <div class="admin-masthead">
+    <div class="container">
+      <a class="admin-brand" href="/admin"><img src="/images/copa-peru-logo.png" alt="Emblema Copa Perú"><span><strong>Administración</strong><small>Liga Copa Perú · Gestión oficial</small></span></a>
+      <div class="admin-header-actions"><a class="admin-public-link" href="/">Ver portal <span aria-hidden="true">↗</span></a><form method="post" th:action="@{/logout}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button type="submit">Cerrar sesión</button></form></div>
+    </div>
+  </div>
+  <nav class="site-navigation admin-navigation" aria-label="Navegación administrativa">
+    <div class="container">
+      <button class="site-menu-toggle" type="button" aria-controls="adminNavMenu" aria-expanded="false" aria-label="Abrir navegación"><span></span><span></span><span></span></button>
+      <div class="site-nav-menu" id="adminNavMenu">
+        <a href="/admin">Panel</a><a href="/admin/clubes">Clubes</a><a href="/admin/temporadas">Temporadas</a><a href="/admin/torneos">Torneos</a><a href="/admin/equipos">Equipos</a><a href="/admin/jugadores">Jugadores</a><a href="/admin/cuerpo-tecnico">Cuerpo técnico</a><a href="/admin/partidos">Partidos</a><a href="/admin/tabla">Tabla</a><a href="/admin/noticias">Noticias</a>
+      </div>
+    </div>
+  </nav>
+  <div class="navigation-loader" aria-hidden="true"><img src="/images/copa-peru-logo.png" alt=""><span class="loader-ball"></span><strong>Guardando información</strong></div>
+  <script defer src="/js/site.js"></script>
+</header>
+</body>
+</html>

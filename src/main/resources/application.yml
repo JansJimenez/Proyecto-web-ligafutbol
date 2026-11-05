@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: liga-copa-peru
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/liga_copa_peru}
+    username: ${DB_USERNAME:liga_app}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+  thymeleaf:
+    cache: ${THYMELEAF_CACHE:false}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 12MB
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: lax
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+app:
+  league-name: ${LEAGUE_NAME:Liga Copa Perú}
+  uploads:
+    location: ${UPLOADS_LOCATION:${user.home}/.liga-copa-peru/uploads}
+  bootstrap-admin:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}

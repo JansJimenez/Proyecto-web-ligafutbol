@@ -1,0 +1,96 @@
+CREATE TABLE seasons (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    season_year INTEGER NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
+    CONSTRAINT uq_season_name_year UNIQUE (name, season_year),
+    CONSTRAINT ck_season_dates CHECK (start_date IS NULL OR end_date IS NULL OR end_date >= start_date),
+    CONSTRAINT ck_season_status CHECK (status IN ('PLANNED', 'ACTIVE', 'CLOSED'))
+);
+
+CREATE TABLE competitions (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    season_id BIGINT NOT NULL,
+    category VARCHAR(80) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    points_win INTEGER NOT NULL DEFAULT 3,
+    points_draw INTEGER NOT NULL DEFAULT 1,
+    points_loss INTEGER NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'PLANNED',
+    CONSTRAINT fk_competitions_season FOREIGN KEY (season_id) REFERENCES seasons(id) ON DELETE NO ACTION,
+    CONSTRAINT ck_competition_dates CHECK (start_date IS NULL OR end_date IS NULL OR end_date >= start_date),
+    CONSTRAINT ck_competition_points CHECK (points_win >= 0 AND points_draw >= 0 AND points_loss >= 0),
+    CONSTRAINT ck_competition_status CHECK (status IN ('PLANNED', 'ACTIVE', 'CLOSED'))
+);
+
+CREATE INDEX ix_competitions_season ON competitions (season_id, status);
+
+CREATE TABLE teams (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    club_id BIGINT NOT NULL,
+    competition_id BIGINT NOT NULL,
+    name VARCHAR(120) NOT NULL,
+    short_name VARCHAR(60),
+    group_name VARCHAR(60),
+    stadium VARCHAR(150),
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    CONSTRAINT fk_teams_club FOREIGN KEY (club_id) REFERENCES clubs(id) ON DELETE NO ACTION,
+    CONSTRAINT fk_teams_competition FOREIGN KEY (competition_id) REFERENCES competitions(id) ON DELETE NO ACTION,
+    CONSTRAINT uq_team_competition_name UNIQUE (competition_id, name),
+    CONSTRAINT ck_team_status CHECK (status IN ('ACTIVE', 'INACTIVE'))
+);
+
+CREATE INDEX ix_teams_club ON teams (club_id, status);
+CREATE INDEX ix_teams_competition ON teams (competition_id, status);
+
+CREATE TABLE players (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    team_id BIGINT NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    birth_date DATE,
+    jersey_number INTEGER,
+    position VARCHAR(32) NOT NULL DEFAULT 'OTHER',
+    nationality VARCHAR(80),
+    photo_url VARCHAR(255),
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    CONSTRAINT fk_players_team FOREIGN KEY (team_id) REFERENCES teams(id) ON DELETE NO ACTION,
+    CONSTRAINT uq_player_team_jersey UNIQUE (team_id, jersey_number),
+    CONSTRAINT ck_player_jersey CHECK (jersey_number IS NULL OR jersey_number BETWEEN 1 AND 99),
+    CONSTRAINT ck_player_status CHECK (status IN ('ACTIVE', 'INACTIVE'))
+);
+
+CREATE INDEX ix_players_team ON players (team_id, status);
+CREATE INDEX ix_players_name ON players (last_name, first_name);
+
+CREATE TABLE matches (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    competition_id BIGINT NOT NULL,
+    home_team_id BIGINT NOT NULL,
+    away_team_id BIGINT NOT NULL,
+    round_number INTEGER,
+    scheduled_at DATETIME2 NOT NULL,
+    stadium VARCHAR(150),
+    home_goals INTEGER,
+    away_goals INTEGER,
+    status VARCHAR(20) NOT NULL DEFAULT 'SCHEDULED',
+    CONSTRAINT fk_matches_competition FOREIGN KEY (competition_id) REFERENCES competitions(id) ON DELETE NO ACTION,
+    CONSTRAINT fk_matches_home_team FOREIGN KEY (home_team_id) REFERENCES teams(id) ON DELETE NO ACTION,
+    CONSTRAINT fk_matches_away_team FOREIGN KEY (away_team_id) REFERENCES teams(id) ON DELETE NO ACTION,
+    CONSTRAINT ck_match_different_teams CHECK (home_team_id <> away_team_id),
+    CONSTRAINT ck_match_round CHECK (round_number IS NULL OR round_number > 0),
+    CONSTRAINT ck_match_scores CHECK (
+        (home_goals IS NULL OR home_goals >= 0)
+        AND (away_goals IS NULL OR away_goals >= 0)
+        AND (status <> 'FINALIZED' OR (home_goals IS NOT NULL AND away_goals IS NOT NULL))
+    ),
+    CONSTRAINT ck_match_status CHECK (status IN ('SCHEDULED', 'FINALIZED', 'POSTPONED', 'CANCELLED'))
+);
+
+CREATE INDEX ix_matches_competition_date ON matches (competition_id, scheduled_at);
+CREATE INDEX ix_matches_home_team ON matches (home_team_id);
+CREATE INDEX ix_matches_away_team ON matches (away_team_id);
