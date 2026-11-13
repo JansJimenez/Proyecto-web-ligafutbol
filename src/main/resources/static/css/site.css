@@ -296,37 +296,35 @@ h1 { font-size: clamp(2rem, 4vw, 3rem); }
   border-radius: 50%;
   box-shadow: 0 0 0 28px rgba(255,255,255,.025), 0 0 0 58px rgba(255,255,255,.02);
 }
-.hero-content { padding-top: 5rem; padding-bottom: 5rem; }
+.hero-content { padding-top: 4rem; padding-bottom: 4rem; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .hero .eyebrow { color: #f2d783; }
 .hero h1 {
-  max-width: 760px;
-  margin: 1rem 0;
+  max-width: 780px;
+  margin: 1rem auto;
   color: #fff;
-  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-size: clamp(2.3rem, 5vw, 4.1rem);
   font-weight: 800;
-  letter-spacing: -.055em;
-  line-height: 1.03;
+  letter-spacing: -.045em;
+  line-height: 1.06;
 }
-.hero .lead { max-width: 590px; margin-bottom: 1.8rem; color: rgba(255,255,255,.78); }
+.hero .lead { max-width: 600px; margin: 0 auto 1.8rem; color: rgba(255,255,255,.82); }
 .hero-emblems {
-  position: absolute;
-  top: 50%;
-  right: max(7vw, calc((100vw - 1120px) / 2));
-  display: flex;
-  width: clamp(180px, 21vw, 260px);
-  aspect-ratio: 1;
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
-  transform: translateY(-50%);
-  border: 1px solid rgba(255,255,255,.14);
-  border-radius: 50%;
-  background: rgba(16, 31, 40, .19);
-  box-shadow: 0 25px 65px rgba(0,0,0,.2), inset 0 0 45px rgba(255,255,255,.03);
-  animation: emblem-drift 6s ease-in-out infinite;
+  gap: 1.4rem;
+  padding: 1rem 1.75rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 999px;
+  background: rgba(16, 31, 40, .34);
+  box-shadow: 0 20px 50px rgba(0,0,0,.22), inset 0 0 30px rgba(255,255,255,.04);
+  animation: emblem-drift 5s ease-in-out infinite;
 }
-.hero-emblems img { width: 37%; max-height: 61%; object-fit: contain; filter: drop-shadow(0 10px 12px rgba(0,0,0,.16)); }
-@keyframes emblem-drift { 50% { transform: translateY(calc(-50% - 8px)); } }
+.hero-emblems img { width: 58px; height: 68px; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.24)); transition: transform .3s ease; }
+.hero-emblems img:hover { transform: scale(1.08); }
+@keyframes emblem-drift { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
 .btn-lime {
   padding: .74rem 1.15rem;
   border: 1px solid var(--red);
@@ -876,17 +874,17 @@ textarea.form-control { min-height: 128px; }
   .site-navigation .site-nav-menu { display: none; width: 100%; flex-basis: 100%; flex-wrap: wrap; padding: .3rem 0 .45rem; }
   .site-navigation .site-nav-menu.is-open { display: flex; }
   .site-navigation .site-nav-menu a { padding: .56rem .68rem; }
-  .hero-emblems { right: 3vw; width: 190px; opacity: .82; }
-  .hero h1 { max-width: 65%; }
+  .hero-emblems { padding: .85rem 1.4rem; }
+  .hero h1 { max-width: 90%; }
 }
 @media (max-width: 767.98px) {
   .band-inner { grid-template-columns: 1fr; gap: 1.25rem; }
   .section-heading { align-items: start; flex-direction: column; }
   .hero { min-height: 390px; }
-  .hero-content { padding-top: 3.8rem; padding-bottom: 3.8rem; }
-  .hero h1 { max-width: 100%; font-size: clamp(2.5rem, 12vw, 4rem); }
-  .hero-emblems { top: auto; right: 1.1rem; bottom: 1rem; width: 94px; transform: none; opacity: .65; }
-  .hero-emblems img { width: 33%; }
+  .hero-content { padding-top: 3.2rem; padding-bottom: 3.2rem; }
+  .hero h1 { max-width: 100%; font-size: clamp(2.1rem, 9vw, 3.2rem); }
+  .hero-emblems { padding: .7rem 1.2rem; gap: 1rem; }
+  .hero-emblems img { width: 46px; height: 54px; }
   .hero::after { top: auto; right: -55px; bottom: -60px; width: 190px; transform: none; }
   .portal-masthead { min-height: 84px; }
   .portal-brand img { width: 39px; height: 60px; }
@@ -976,3 +974,22 @@ textarea.form-control { min-height: 128px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+.legal-consent-banner {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1080;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 1rem;
+  background: rgba(16, 31, 40, .96);
+  color: #fff;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, .28);
+  backdrop-filter: blur(8px);
+}
+.legal-consent-banner a { color: #f2d783; text-decoration: underline; font-weight: 600; }
+.legal-consent-banner a:hover { color: #fff; }

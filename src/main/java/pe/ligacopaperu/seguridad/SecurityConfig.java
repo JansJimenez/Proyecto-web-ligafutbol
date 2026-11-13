@@ -28,7 +28,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/clubes", "/equipos", "/jugadores", "/cuerpo-tecnico", "/partidos", "/tabla",
-                                "/noticias", "/noticias/**", "/estadisticas",
+                                "/noticias", "/noticias/**", "/estadisticas", "/politica-privacidad", "/terminos-uso",
                                 "/login", "/css/**", "/js/**", "/images/**", "/media/**", "/actuator/health", "/error",
                                 "/robots.txt", "/sitemap.xml", "/google9a360452cd0d0137.html", "/google*.html")
                         .permitAll()

@@ -297,4 +297,40 @@
     const form = event.target;
     if (form instanceof HTMLFormElement && (!form.target || form.target === "_self")) showLoader();
   });
+
+  // Aviso de Política de Uso y Privacidad al ingresar al portal público
+  const path = window.location.pathname;
+  const isPublicPortal = !path.startsWith("/admin") && path !== "/login";
+  const legalKey = "liga_san_marcos_legal_accepted_v1";
+  if (isPublicPortal) {
+    try {
+      if (window.localStorage.getItem(legalKey) !== "true") {
+        const banner = document.createElement("aside");
+        banner.className = "legal-consent-banner";
+        banner.setAttribute("role", "dialog");
+        banner.setAttribute("aria-label", "Aviso legal y política de privacidad");
+        banner.innerHTML =
+          '<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">' +
+            '<div class="small lh-sm">' +
+              '<strong>Aviso legal y privacidad:</strong> Al ingresar y navegar en este portal aceptas nuestra ' +
+              '<a href="/terminos-uso">Política de Uso</a>, nuestra ' +
+              '<a href="/politica-privacidad">Política de Privacidad</a> y el tratamiento técnico de datos de navegación.' +
+            '</div>' +
+            '<div class="d-flex gap-2 flex-shrink-0">' +
+              '<button type="button" class="btn btn-lime btn-sm px-3" id="acceptLegalConsentBtn">Aceptar y continuar</button>' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(banner);
+        const acceptBtn = document.getElementById("acceptLegalConsentBtn");
+        if (acceptBtn) {
+          acceptBtn.addEventListener("click", () => {
+            window.localStorage.setItem(legalKey, "true");
+            banner.remove();
+          });
+        }
+      }
+    } catch (_) {
+      // Si el navegador bloquea localStorage, no interrumpir la navegación
+    }
+  }
 })();

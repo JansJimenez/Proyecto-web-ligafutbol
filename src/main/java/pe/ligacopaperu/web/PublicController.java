@@ -48,4 +48,14 @@ public class PublicController {
     public String login() {
         return "auth/login";
     }
+
+    @GetMapping("/politica-privacidad")
+    public String privacyPolicy() {
+        return "public/privacy";
+    }
+
+    @GetMapping("/terminos-uso")
+    public String termsOfUse() {
+        return "public/terms";
+    }
 }
