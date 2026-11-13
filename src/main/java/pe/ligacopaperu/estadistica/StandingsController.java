@@ -23,10 +23,13 @@ public class StandingsController {
                 org.springframework.data.domain.Sort.Direction.DESC, "startDate"));
         model.addAttribute("competitions", allCompetitions);
         if (torneo != null) {
-            var competition = competitions.findById(torneo).orElse(null);
+            var competition = allCompetitions.stream()
+                    .filter(item -> item.getId().equals(torneo))
+                    .findFirst()
+                    .orElseGet(() -> competitions.findById(torneo).orElse(null));
             if (competition != null) {
                 model.addAttribute("selectedCompetition", competition);
-                model.addAttribute("table", standings.table(torneo));
+                model.addAttribute("table", standings.table(competition.getId()));
             }
         } else if (!allCompetitions.isEmpty()) {
             var competition = allCompetitions.get(0);
