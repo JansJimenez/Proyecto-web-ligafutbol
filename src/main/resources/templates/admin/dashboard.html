@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel de administración · San Marcos (Pedro Gálvez) | Liga Copa Perú</title>
+  <title>Panel de administración · San Marcos | Liga Copa Perú</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/site.css" rel="stylesheet">
 </head>
@@ -13,249 +13,93 @@
 <header th:replace="~{fragments/navigation :: adminNavigation}"></header>
 <main class="container section-space">
   <section class="admin-dashboard-hero">
-    <span class="eyebrow">LIGA PROVINCIAL DE FÚTBOL DE SAN MARCOS · SEDE PEDRO GÁLVEZ · REGIÓN CAJAMARCA</span>
-    <h1>Panel de control · San Marcos</h1>
-    <p>Administración oficial de la Liga Provincial de San Marcos (Sede Pedro Gálvez, Región Cajamarca) y sus 7 distritos: Pedro Gálvez, Chancay, Eduardo Villanueva, Gregorio Pita, Ichocán, José Manuel Quiroz y José Sabogal (mínimo 6 clubes por distrito).</p>
-    <div class="portal-shortcuts mt-4"><a href="/">Abrir portal público ↗</a><a href="/partidos">Consultar fixture ↗</a><a href="/admin/auditoria">Bitácora de auditoría ↗</a></div>
+    <span class="eyebrow">CENTRO DE OPERACIONES · SAN MARCOS</span>
+    <h1>Panel de control</h1>
+    <p>Administra clubes de los 7 distritos, torneos, planteles, actas oficiales y noticias con respaldo en Firebase Firestore.</p>
   </section>
   <section class="row g-3 mt-3">
-    <div class="col-6 col-lg-3"><article class="metric-card"><div class="d-flex justify-content-between align-items-center"><span>Clubes activos</span><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span></div><strong th:text="${activeClubCount}">0</strong><small>7 distritos de San Marcos (mín. 6 c/u)</small></article></div>
+    <div class="col-6 col-lg-3"><article class="metric-card"><div class="d-flex justify-content-between align-items-center"><span>Clubes activos</span><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span></div><strong th:text="${activeClubCount}">0</strong><small>En los 7 distritos</small></article></div>
     <div class="col-6 col-lg-3"><article class="metric-card"><div class="d-flex justify-content-between align-items-center"><span>Equipos inscritos</span><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></span></div><strong th:text="${activeTeamCount != null ? activeTeamCount : 0}">0</strong><small>Participando en etapas</small></article></div>
     <div class="col-6 col-lg-3"><article class="metric-card"><div class="d-flex justify-content-between align-items-center"><span>Jugadores habilitados</span><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div><strong th:text="${activePlayerCount != null ? activePlayerCount : 0}">0</strong><small>Carné de cancha activo</small></article></div>
     <div class="col-6 col-lg-3"><article class="metric-card"><div class="d-flex justify-content-between align-items-center"><span>Partidos finalizados</span><span class="metric-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5 12 7"/></svg></span></div><strong th:text="${finalizedMatchCount != null ? finalizedMatchCount : 0}">0</strong><small><span class="status-dot"></span> Sincronizado con Firebase</small></article></div>
   </section>
 
-  <section class="mt-4" th:if="${districtQuotas != null}">
-    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
-      <div>
-        <span class="eyebrow text-green">CUOTA OFICIAL POR DISTRITO · MÍNIMO 6 CLUBES</span>
-        <h2 class="h4 mb-0">Cobertura de los 7 distritos de San Marcos</h2>
-      </div>
-      <a class="link-green fw-semibold small" href="/admin/clubes">Gestionar padrón de clubes →</a>
-    </div>
-    <div class="row g-2">
-      <div class="col-6 col-md-4 col-lg-3" th:each="dq : ${districtQuotas}">
-        <div class="bg-white rounded-3 p-3 border shadow-sm h-100">
-          <div class="d-flex justify-content-between align-items-center">
-            <strong class="small" th:text="${dq.districtName}">Pedro Gálvez</strong>
-            <span class="badge" th:classappend="${dq.complete ? 'text-bg-success' : 'text-bg-warning'}" th:text="${dq.activeClubs + '/' + dq.minimumRequired}">6/6</span>
-          </div>
-          <small class="text-muted d-block mt-1" th:text="${dq.stadiumName}">Estadio</small>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <section class="mt-5">
-    <div class="section-heading"><div><span class="eyebrow">GESTIÓN DE LA LIGA PROVINCIAL DE SAN MARCOS</span><h2>Módulos de administración</h2><p>Accede a cada área para actualizar la información de la competición.</p></div></div>
+    <div class="section-heading"><div><span class="eyebrow">ADMINISTRACIÓN</span><h2>Módulos de gestión</h2></div></div>
     <div class="row g-3 mt-1">
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/clubes">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></span>
-          <span><strong>Clubes (7 Distritos)</strong><small>Administrar los clubes de Pedro Gálvez, Chancay, Eduardo Villanueva, Gregorio Pita, Ichocán, José Manuel Quiroz y José Sabogal.</small></span>
+          <span><strong>Clubes y 7 Distritos</strong><small>Registrar, editar y controlar la cuota mínima de 6 clubes por distrito.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/temporadas">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/></svg></span>
-          <span><strong>Temporadas</strong><small>Configura los años deportivos, fechas de apertura y clausura del calendario en San Marcos.</small></span>
+          <span><strong>Temporadas</strong><small>Configura los años deportivos y fechas del calendario.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/torneos">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
-          <span><strong>Torneos y etapas</strong><small>Administra la Liga Provincial de San Marcos (Pedro Gálvez) y sus 7 Ligas Distritales.</small></span>
+          <span><strong>Torneos y etapas</strong><small>Administra la Liga Provincial y sus 7 Ligas Distritales.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/equipos">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></span>
-          <span><strong>Equipos</strong><small>Inscribe a los clubes de los 7 distritos en torneos, administra series y escudos.</small></span>
+          <span><strong>Equipos</strong><small>Inscribe clubes en torneos, administra series y escudos.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
-    </section>
-    <section class="mt-5">
-      <div class="section-heading">
-        <div><span class="eyebrow">GESTIÓN DE LA LIGA</span>
-          <h2>Módulos de administración</h2>
-          <p>Accede a cada área para actualizar la información de la competición.</p>
-        </div>
+      <div class="col-md-6">
+        <a class="module-link h-100" href="/admin/jugadores">
+          <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+          <span><strong>Jugadores</strong><small>Planteles, dorsales, edad reglamentaria y documentos.</small></span>
+          <span class="module-arrow" aria-hidden="true">→</span>
+        </a>
       </div>
-      <div class="row g-3 mt-1">
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/clubes">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="M12 8v4" />
-                <path d="M12 16h.01" />
-              </svg></span>
-            <span><strong>Clubes</strong><small>Crear, editar y desactivar clubes departamentales, provinciales y
-                distritales.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/temporadas">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-                <path d="M8 14h.01" />
-                <path d="M12 14h.01" />
-                <path d="M16 14h.01" />
-              </svg></span>
-            <span><strong>Temporadas</strong><small>Configura los años deportivos, fechas de apertura y clausura del
-                calendario.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/torneos">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                <path d="M4 22h16" />
-                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-              </svg></span>
-            <span><strong>Torneos y etapas</strong><small>Administra Etapas Distrital, Provincial, Departamental y
-                Nacional.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/equipos">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                  d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z" />
-              </svg></span>
-            <span><strong>Equipos</strong><small>Inscribe clubes en torneos, administra series (Serie A / B) y
-                escudos.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/jugadores">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-              </svg></span>
-            <span><strong>Jugadores</strong><small>Administra planteles, dorsales, edad reglamentaria y
-                documentos.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/cuerpo-tecnico">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="8" y="2" width="8" height="4" rx="1" />
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                <path d="M9 12h6" />
-                <path d="M9 16h6" />
-              </svg></span>
-            <span><strong>Cuerpo técnico</strong><small>Gestiona comando técnico, delegados, médicos y kinesiólogos por
-                equipo.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/partidos">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5 12 7" />
-              </svg></span>
-            <span><strong>Partidos y actas oficiales</strong><small>Programa fechas, registra goles/tarjetas en el acta
-                y valida marcadores.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/noticias">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path
-                  d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-                <path d="M18 14h-8" />
-                <path d="M15 18h-5" />
-                <path d="M10 6h8v4h-8V6Z" />
-              </svg></span>
-            <span><strong>Noticias y resoluciones</strong><small>Publica comunicados, programación de fechas y fallos de
-                Comisión de Justicia.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/tabla">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
-              </svg></span>
-            <span><strong>Tabla de posiciones</strong><small>Consulta la clasificación oficial por etapa y diferencia de
-                goles.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-        <div class="col-md-6">
-          <a class="module-link h-100" href="/admin/auditoria">
-            <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="m9 12 2 2 4-4" />
-              </svg></span>
-            <span><strong>Bitácora de auditoría</strong><small>Revisa el historial de operaciones administrativas
-                sincronizadas en Firebase.</small></span>
-            <span class="module-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
+      <div class="col-md-6">
+        <a class="module-link h-100" href="/admin/cuerpo-tecnico">
+          <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></span>
+          <span><strong>Cuerpo técnico</strong><small>Comando técnico, delegados y personal médico.</small></span>
+          <span class="module-arrow" aria-hidden="true">→</span>
+        </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/partidos">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5 12 7"/></svg></span>
-          <span><strong>Partidos y actas oficiales</strong><small>Programa fechas en los estadios de San Marcos, registra goles/tarjetas y valida marcadores.</small></span>
+          <span><strong>Partidos y actas oficiales</strong><small>Programa fechas, registra goles/tarjetas y valida marcadores.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/noticias">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span>
-          <span><strong>Noticias y resoluciones</strong><small>Publica comunicados de la Liga Provincial de San Marcos y Comisión de Justicia.</small></span>
+          <span><strong>Noticias y resoluciones</strong><small>Publica comunicados oficiales y fallos de Comisión de Justicia.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/tabla">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-          <span><strong>Tabla de posiciones</strong><small>Consulta la clasificación oficial por etapa y diferencia de goles.</small></span>
+          <span><strong>Tabla de posiciones</strong><small>Clasificación oficial por torneo y diferencia de goles.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
       <div class="col-md-6">
         <a class="module-link h-100" href="/admin/auditoria">
           <span class="module-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
-          <span><strong>Bitácora de auditoría</strong><small>Revisa el historial de operaciones administrativas sincronizadas en Firebase.</small></span>
+          <span><strong>Bitácora de auditoría</strong><small>Historial de operaciones sincronizadas en Firebase.</small></span>
           <span class="module-arrow" aria-hidden="true">→</span>
         </a>
       </div>
-    </div>
-  </section>
-</main>
+      </div>
+    </section>
+  </main>
 </body>
 
 </html>
