@@ -30,7 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/clubes", "/equipos", "/jugadores", "/cuerpo-tecnico", "/partidos", "/tabla",
                                 "/noticias", "/noticias/**", "/estadisticas",
                                 "/login", "/css/**", "/js/**", "/images/**", "/media/**", "/actuator/health", "/error",
-                                "/robots.txt", "/sitemap.xml")
+                                "/robots.txt", "/sitemap.xml", "/google9a360452cd0d0137.html", "/google*.html")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().denyAll())
