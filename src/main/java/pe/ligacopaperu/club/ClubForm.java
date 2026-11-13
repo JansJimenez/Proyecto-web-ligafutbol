@@ -125,9 +125,9 @@ public class ClubForm {
         form.setPhone(club.getPhone());
         form.setEmail(club.getEmail());
         form.setWebsite(club.getWebsite());
-        form.setPrimaryColor(club.getPrimaryColor());
-        form.setSecondaryColor(club.getSecondaryColor());
-        form.setStatus(club.getStatus());
+        form.setPrimaryColor(club.getPrimaryColor() != null ? club.getPrimaryColor() : "#df1732");
+        form.setSecondaryColor(club.getSecondaryColor() != null ? club.getSecondaryColor() : "#ffffff");
+        form.setStatus(club.getStatus() != null ? club.getStatus() : ClubStatus.ACTIVE);
         return form;
     }
 }

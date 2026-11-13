@@ -51,6 +51,18 @@ public class ClubService {
     }
 
     @Transactional(readOnly = true)
+    public List<Club> listForAdministration(String district) {
+        if (district == null || district.isBlank()) {
+            return listForAdministration();
+        }
+        String normalizedDistrict = district.trim();
+        return listForAdministration().stream()
+                .filter(club -> club.getDistrict() != null
+                        && club.getDistrict().equalsIgnoreCase(normalizedDistrict))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public List<Club> listPublic() {
         return clubs.findByStatusOrderByOfficialNameAsc(ClubStatus.ACTIVE);
     }
@@ -137,6 +149,15 @@ public class ClubService {
         Club saved = clubs.save(club);
         syncToFirestore(saved);
         audit.record(actor, "CLUB_DEACTIVATED", id, saved.getOfficialName());
+    }
+
+    @Transactional
+    public void activate(long id, String actor) {
+        Club club = findClub(id);
+        club.setStatus(ClubStatus.ACTIVE);
+        Club saved = clubs.save(club);
+        syncToFirestore(saved);
+        audit.record(actor, "CLUB_ACTIVATED", id, saved.getOfficialName());
     }
 
     private Club findClub(long id) {

@@ -35,10 +35,11 @@ public class ClubController {
     }
 
     @GetMapping("/admin/clubes")
-    public String list(Model model) {
-        model.addAttribute("clubs", clubs.listForAdministration());
+    public String list(@RequestParam(required = false) String distrito, Model model) {
+        model.addAttribute("clubs", clubs.listForAdministration(distrito));
         model.addAttribute("districtQuotas", clubs.sanMarcosDistrictQuotas());
         model.addAttribute("districts", ClubService.SAN_MARCOS_DISTRICTS);
+        model.addAttribute("selectedDistrito", distrito);
         return "admin/clubs/list";
     }
 
@@ -113,6 +114,13 @@ public class ClubController {
     public String deactivate(@PathVariable long id, Principal principal, RedirectAttributes redirect) {
         clubs.deactivate(id, principal.getName());
         redirect.addFlashAttribute("success", "El club se desactivó y su historial se conservó.");
+        return "redirect:/admin/clubes";
+    }
+
+    @PostMapping("/admin/clubes/{id}/activar")
+    public String activate(@PathVariable long id, Principal principal, RedirectAttributes redirect) {
+        clubs.activate(id, principal.getName());
+        redirect.addFlashAttribute("success", "El club se reactivó correctamente.");
         return "redirect:/admin/clubes";
     }
 
