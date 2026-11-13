@@ -4,6 +4,7 @@ public record StandingRow(
         Long teamId,
         String teamName,
         String clubName,
+        String groupName,
         int played,
         int won,
         int drawn,
@@ -11,6 +12,20 @@ public record StandingRow(
         int goalsFor,
         int goalsAgainst,
         int points) {
+
+    public StandingRow(
+            Long teamId,
+            String teamName,
+            String clubName,
+            int played,
+            int won,
+            int drawn,
+            int lost,
+            int goalsFor,
+            int goalsAgainst,
+            int points) {
+        this(teamId, teamName, clubName, null, played, won, drawn, lost, goalsFor, goalsAgainst, points);
+    }
 
     public int getGoalDifference() {
         return goalsFor - goalsAgainst;

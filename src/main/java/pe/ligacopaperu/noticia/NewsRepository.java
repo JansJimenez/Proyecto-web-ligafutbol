@@ -17,4 +17,6 @@ public interface NewsRepository extends JpaRepository<NewsArticle, Long> {
     Optional<NewsArticle> findBySlugAndStatus(String slug, NewsStatus status);
 
     boolean existsBySlug(String slug);
+
+    long countByStatus(NewsStatus status);
 }

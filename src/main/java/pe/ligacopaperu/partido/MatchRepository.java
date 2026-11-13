@@ -19,4 +19,14 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     @EntityGraph(attributePaths = {"competition", "competition.season", "homeTeam", "homeTeam.club",
             "awayTeam", "awayTeam.club"})
     List<Match> findByCompetitionIdAndStatusOrderByScheduledAtAsc(Long competitionId, MatchStatus status);
+
+    @EntityGraph(attributePaths = {"competition", "competition.season", "homeTeam", "homeTeam.club",
+            "awayTeam", "awayTeam.club"})
+    List<Match> findByStatusInOrderByScheduledAtAsc(List<MatchStatus> statuses);
+
+    @EntityGraph(attributePaths = {"competition", "competition.season", "homeTeam", "homeTeam.club",
+            "awayTeam", "awayTeam.club"})
+    List<Match> findByCompetitionIdAndStatusInOrderByScheduledAtAsc(Long competitionId, List<MatchStatus> statuses);
+
+    long countByStatus(MatchStatus status);
 }

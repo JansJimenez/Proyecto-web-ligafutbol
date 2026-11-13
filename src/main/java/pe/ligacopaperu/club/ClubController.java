@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -17,29 +18,42 @@ import jakarta.validation.Valid;
 public class ClubController {
 
     private final ClubService clubs;
+    private final SanMarcosBootstrapService sanMarcosBootstrap;
 
-    public ClubController(ClubService clubs) {
+    public ClubController(ClubService clubs, SanMarcosBootstrapService sanMarcosBootstrap) {
         this.clubs = clubs;
+        this.sanMarcosBootstrap = sanMarcosBootstrap;
     }
 
     @GetMapping("/clubes")
-    public String publicClubs(Model model) {
-        model.addAttribute("clubs", clubs.listPublic());
+    public String publicClubs(@RequestParam(required = false) String distrito, Model model) {
+        model.addAttribute("clubs", clubs.listPublic(distrito));
+        model.addAttribute("districtQuotas", clubs.sanMarcosDistrictQuotas());
+        model.addAttribute("districts", ClubService.SAN_MARCOS_DISTRICTS);
+        model.addAttribute("selectedDistrito", distrito);
         return "public/clubs";
     }
 
     @GetMapping("/admin/clubes")
     public String list(Model model) {
         model.addAttribute("clubs", clubs.listForAdministration());
+        model.addAttribute("districtQuotas", clubs.sanMarcosDistrictQuotas());
+        model.addAttribute("districts", ClubService.SAN_MARCOS_DISTRICTS);
         return "admin/clubs/list";
+    }
+
+    @PostMapping("/admin/clubes/cargar-san-marcos")
+    public String bootstrapSanMarcos(Principal principal, RedirectAttributes redirect) {
+        sanMarcosBootstrap.ensureSanMarcosLeagueData(principal.getName());
+        redirect.addFlashAttribute("success",
+                "Se completó el padrón oficial de los 7 distritos de San Marcos (mínimo 6 clubes y equipos por distrito).");
+        return "redirect:/admin/clubes";
     }
 
     @GetMapping("/admin/clubes/nuevo")
     public String newClub(Model model) {
         model.addAttribute("clubForm", new ClubForm());
-        model.addAttribute("pageTitle", "Registrar club");
-        model.addAttribute("formAction", "/admin/clubes");
-        model.addAttribute("statuses", ClubStatus.values());
+        prepareForm(model, "Registrar club", "/admin/clubes", null);
         return "admin/clubs/form";
     }
 
@@ -68,9 +82,7 @@ public class ClubController {
     @GetMapping("/admin/clubes/{id}/editar")
     public String edit(@PathVariable long id, Model model) {
         model.addAttribute("clubForm", clubs.formFor(id));
-        model.addAttribute("pageTitle", "Editar club");
-        model.addAttribute("formAction", "/admin/clubes/" + id);
-        model.addAttribute("clubId", id);
+        prepareForm(model, "Editar club", "/admin/clubes/" + id, id);
         return "admin/clubs/form";
     }
 
@@ -109,5 +121,6 @@ public class ClubController {
         model.addAttribute("formAction", action);
         model.addAttribute("clubId", clubId);
         model.addAttribute("statuses", ClubStatus.values());
+        model.addAttribute("districts", ClubService.SAN_MARCOS_DISTRICTS);
     }
 }

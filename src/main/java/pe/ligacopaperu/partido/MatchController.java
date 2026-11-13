@@ -34,11 +34,10 @@ public class MatchController {
     }
 
     @GetMapping("/partidos")
-    public String publicList(Model model) {
-        model.addAttribute("matches", matches.list().stream()
-                .filter(match -> match.getStatus() == MatchStatus.SCHEDULED
-                        || match.getStatus() == MatchStatus.FINALIZED)
-                .toList());
+    public String publicList(@RequestParam(required = false) Long torneo, Model model) {
+        model.addAttribute("matches", matches.publicList(torneo));
+        model.addAttribute("competitions", matches.competitions());
+        model.addAttribute("selectedTorneo", torneo);
         return "public/matches";
     }
 
@@ -90,8 +89,12 @@ public class MatchController {
     @PostMapping("/admin/partidos/{matchId}/acta/{eventId}/eliminar")
     public String removeEvent(@PathVariable long matchId, @PathVariable long eventId,
             Principal principal, RedirectAttributes redirect) {
-        matchEvents.remove(matchId, eventId, principal.getName());
-        redirect.addFlashAttribute("success", "El evento se eliminó del acta.");
+        try {
+            matchEvents.remove(matchId, eventId, principal.getName());
+            redirect.addFlashAttribute("success", "El evento se eliminó del acta.");
+        } catch (IllegalArgumentException exception) {
+            redirect.addFlashAttribute("error", exception.getMessage());
+        }
         return "redirect:/admin/partidos/" + matchId + "/acta";
     }
 

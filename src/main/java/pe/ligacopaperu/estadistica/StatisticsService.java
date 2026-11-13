@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pe.ligacopaperu.partido.MatchEvent;
 import pe.ligacopaperu.partido.MatchEventRepository;
-import pe.ligacopaperu.partido.MatchEventType;
 import pe.ligacopaperu.partido.MatchStatus;
 
 @Service
@@ -23,11 +22,16 @@ public class StatisticsService {
 
     @Transactional(readOnly = true)
     public List<ScorerRow> playerStatistics() {
+        return playerStatistics(null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ScorerRow> playerStatistics(Long competitionId) {
         Map<String, MutableScorer> statistics = new LinkedHashMap<>();
-        for (MatchEvent event : events.findAllByOrderByMinuteAsc()) {
-            if (event.getMatch().getStatus() != MatchStatus.FINALIZED) {
-                continue;
-            }
+        List<MatchEvent> finalizedEvents = competitionId == null
+                ? events.findByMatchStatusOrderByMinuteAsc(MatchStatus.FINALIZED)
+                : events.findByMatchCompetitionIdAndMatchStatusOrderByMinuteAsc(competitionId, MatchStatus.FINALIZED);
+        for (MatchEvent event : finalizedEvents) {
             String key = event.getPlayer().getId() + ":" + event.getTeam().getId();
             MutableScorer row = statistics.computeIfAbsent(key, ignored -> new MutableScorer(
                     event.getPlayer().getFullName(), event.getTeam().getName(),
@@ -46,7 +50,7 @@ public class StatisticsService {
                         .thenComparing(Comparator.comparingInt(
                                 (MutableScorer row) -> row.assists).reversed())
                         .thenComparing(row -> row.playerName, String.CASE_INSENSITIVE_ORDER))
-                .map(MutableScorer::toRow)
+                .map(row -> row.toRow())
                 .toList();
     }
 

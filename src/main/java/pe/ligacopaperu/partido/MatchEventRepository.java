@@ -12,5 +12,13 @@ public interface MatchEventRepository extends JpaRepository<MatchEvent, Long> {
     @EntityGraph(attributePaths = {"match", "team", "team.club", "player"})
     List<MatchEvent> findAllByOrderByMinuteAsc();
 
+    @EntityGraph(attributePaths = {"match", "team", "team.club", "player"})
+    List<MatchEvent> findByMatchStatusOrderByMinuteAsc(MatchStatus status);
+
+    @EntityGraph(attributePaths = {"match", "team", "team.club", "player"})
+    List<MatchEvent> findByMatchCompetitionIdAndMatchStatusOrderByMinuteAsc(Long competitionId, MatchStatus status);
+
+    boolean existsByMatchIdAndPlayerIdAndType(Long matchId, Long playerId, MatchEventType type);
+
     long countByMatchId(Long matchId);
 }

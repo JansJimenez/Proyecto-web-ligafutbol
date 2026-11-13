@@ -11,30 +11,30 @@ import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class PlayerForm {
-    @NotNull
+    @NotNull(message = "Selecciona el equipo en el que está inscrito el jugador.")
     private Long teamId;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Ingresa los nombres del jugador.")
+    @Size(max = 100, message = "Los nombres no deben superar 100 caracteres.")
     private String firstName;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Ingresa los apellidos del jugador.")
+    @Size(max = 100, message = "Los apellidos no deben superar 100 caracteres.")
     private String lastName;
 
-    @NotNull
-    @Past
+    @NotNull(message = "Ingresa la fecha de nacimiento del jugador.")
+    @Past(message = "La fecha de nacimiento debe ser anterior a hoy.")
     private LocalDate birthDate;
 
-    @Min(1)
-    @Max(99)
+    @Min(value = 1, message = "El dorsal debe estar entre 1 y 99.")
+    @Max(value = 99, message = "El dorsal debe estar entre 1 y 99.")
     private Integer jerseyNumber;
 
-    @NotNull
+    @NotNull(message = "Selecciona la posición en el campo.")
     private PlayerPosition position = PlayerPosition.OTHER;
 
-    @Size(max = 80)
-    private String nationality;
+    @Size(max = 80, message = "La nacionalidad no debe superar 80 caracteres.")
+    private String nationality = "Peruana";
 
     private MultipartFile photoFile;
 
@@ -48,7 +48,7 @@ public class PlayerForm {
 
     private String identityDocumentUrl;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado de habilitación del jugador.")
     private PlayerStatus status = PlayerStatus.ACTIVE;
 
     public Long getTeamId() { return teamId; }

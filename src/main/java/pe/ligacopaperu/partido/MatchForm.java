@@ -2,36 +2,40 @@ package pe.ligacopaperu.partido;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class MatchForm {
-    @NotNull
+    @NotNull(message = "Selecciona el torneo o etapa del partido.")
     private Long competitionId;
 
-    @NotNull
+    @NotNull(message = "Selecciona el equipo local.")
     private Long homeTeamId;
 
-    @NotNull
+    @NotNull(message = "Selecciona el equipo visitante.")
     private Long awayTeamId;
 
-    @Min(1)
-    private Integer roundNumber;
+    @Min(value = 1, message = "El número de fecha o jornada debe ser al menos 1.")
+    @Max(value = 100, message = "El número de fecha o jornada no puede superar 100.")
+    private Integer roundNumber = 1;
 
-    @NotNull
+    @NotNull(message = "Indica la fecha y hora programada del encuentro.")
     private LocalDateTime scheduledAt;
 
-    @Size(max = 150)
+    @Size(max = 150, message = "El nombre del estadio o escenario no debe superar 150 caracteres.")
     private String stadium;
 
-    @Min(0)
+    @Min(value = 0, message = "Los goles del local no pueden ser negativos.")
+    @Max(value = 50, message = "Los goles del local no pueden superar 50.")
     private Integer homeGoals;
 
-    @Min(0)
+    @Min(value = 0, message = "Los goles del visitante no pueden ser negativos.")
+    @Max(value = 50, message = "Los goles del visitante no pueden superar 50.")
     private Integer awayGoals;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado del encuentro.")
     private MatchStatus status = MatchStatus.SCHEDULED;
 
     public Long getCompetitionId() { return competitionId; }

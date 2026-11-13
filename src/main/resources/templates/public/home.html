@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Portal institucional de la Liga Copa Perú. Consulta clubes e información deportiva oficial.">
+  <meta name="description" content="Portal institucional de la Liga Provincial de San Marcos (Sede Pedro Gálvez, Región Cajamarca) · Copa Perú.">
   <meta property="og:title" th:content="${leagueName}">
-  <meta property="og:description" content="Información institucional y clubes de la liga.">
-  <title th:text="${leagueName} + ' | Portal oficial'">Liga Copa Perú | Portal oficial</title>
+  <meta property="og:description" content="Información institucional y clubes de los 7 distritos de San Marcos, Cajamarca.">
+  <title th:text="${leagueName} + ' | Portal oficial'">Liga Provincial de San Marcos · Copa Perú | Portal oficial</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/site.css" rel="stylesheet">
 </head>
 <body>
 <header class="portal-header">
-  <div class="portal-topline"><div class="container d-flex justify-content-between align-items-center gap-3"><span>FÚTBOL QUE UNE AL PERÚ</span><a href="/login">¿Eres administrador? <strong>INGRESA AQUÍ&nbsp; ↗</strong></a></div></div>
+  <div class="portal-topline"><div class="container d-flex justify-content-between align-items-center gap-3"><span>COPA PERÚ · PROVINCIA DE SAN MARCOS · SEDE PEDRO GÁLVEZ · REGIÓN CAJAMARCA</span><a href="/login">¿Eres administrador? <strong>INGRESA AQUÍ&nbsp; ↗</strong></a></div></div>
   <div class="portal-masthead container">
-    <a class="portal-brand" href="/" aria-label="Inicio de la Liga Copa Perú"><img src="/images/copa-peru-logo.png" alt="Emblema Copa Perú"><span><strong th:text="${leagueName}">Liga Copa Perú</strong><small>La pasión nace en cada región</small></span></a>
+    <a class="portal-brand" href="/" aria-label="Inicio de la Liga Copa Perú"><img src="/images/copa-peru-logo.png" alt="Emblema Copa Perú"><span><strong th:text="${leagueName}">Liga Provincial de San Marcos · Copa Perú</strong><small>Sede Pedro Gálvez · Región Cajamarca · 7 Distritos</small></span></a>
     <div class="portal-partner"><img src="/images/fpf-logo.png" alt="Federación Peruana de Fútbol"><span>Federación<br>Peruana de Fútbol</span></div>
   </div>
   <nav class="site-navigation" aria-label="Navegación principal">
@@ -30,41 +30,88 @@
 <main>
   <section class="hero">
     <div class="container hero-content">
-      <span class="eyebrow">EL CAMINO A LA GLORIA EMPIEZA AQUÍ</span>
+      <span class="eyebrow">LIGA PROVINCIAL DE SAN MARCOS · SEDE PEDRO GÁLVEZ · REGIÓN CAJAMARCA</span>
       <h1>Donde nace la pasión del fútbol peruano.</h1>
-      <p class="lead">La historia de la Copa Perú se escribe en cada cancha, en cada región y con el esfuerzo de su gente.</p>
+      <p class="lead">Gestión oficial de la Liga Provincial de Fútbol de San Marcos con sede en el distrito de Pedro Gálvez (Región Cajamarca). Participan los 7 distritos de la provincia con un mínimo de 6 clubes por distrito.</p>
       <div class="d-flex flex-wrap gap-3">
         <a class="btn btn-lime" href="/partidos">Ver fixture <span aria-hidden="true">→</span></a>
         <a class="btn btn-outline-light" href="/tabla">Tabla de posiciones</a>
+        <a class="btn btn-outline-light" href="/clubes">7 Distritos y Clubes</a>
       </div>
     </div>
     <div class="hero-emblems" aria-hidden="true"><img src="/images/copa-peru-logo.png" alt=""><img src="/images/fpf-logo.png" alt=""></div>
   </section>
+  <section class="copa-stages-strip">
+    <div class="container">
+      <div class="row g-3 align-items-center">
+        <div class="col-6 col-lg-3"><div class="stage-step"><span class="stage-num">ETAPA 01 · 7 DISTRITOS</span><strong>Ligas Distritales</strong><small>Mínimo 6 clubes por cada distrito de San Marcos</small></div></div>
+        <div class="col-6 col-lg-3"><div class="stage-step"><span class="stage-num">ETAPA 02 · SEDE CENTRAL</span><strong>Liga Provincial San Marcos</strong><small>Manejo oficial en el distrito de Pedro Gálvez</small></div></div>
+        <div class="col-6 col-lg-3"><div class="stage-step"><span class="stage-num">ETAPA 03 · REGIÓN</span><strong>Etapa Departamental</strong><small>Liga Departamental de Fútbol de Cajamarca</small></div></div>
+        <div class="col-6 col-lg-3"><div class="stage-step"><span class="stage-num">ETAPA 04 · FINALÍSIMA</span><strong>Etapa Nacional</strong><small>Representando a San Marcos y Cajamarca</small></div></div>
+      </div>
+    </div>
+  </section>
   <section class="container section-space" id="competicion">
     <div class="section-heading">
       <div>
-        <span class="eyebrow">VIVE LA COMPETICIÓN</span>
-        <h2>Todo el fútbol, en un solo lugar</h2>
-        <p>Explora información oficial publicada por la organización.</p>
+        <span class="eyebrow">LIGA PROVINCIAL DE SAN MARCOS · PEDRO GÁLVEZ, CAJAMARCA</span>
+        <h2>Todo el Fútbol Macho de San Marcos, en un solo lugar</h2>
+        <p>Consulta resultados en vivo, tablas de posiciones por serie, planteles y resoluciones de los 7 distritos.</p>
       </div>
-      <span class="metric-pill"><strong th:text="${activeClubCount}">0</strong> clubes activos</span>
+      <div class="d-flex flex-wrap gap-2">
+        <span class="metric-pill"><strong>7</strong> distritos oficiales</span>
+        <span class="metric-pill"><strong th:text="${activeClubCount}">0</strong> clubes activos</span>
+        <span class="metric-pill" th:if="${activeTeamCount != null}"><strong th:text="${activeTeamCount}">0</strong> equipos</span>
+        <span class="metric-pill" th:if="${activePlayerCount != null}"><strong th:text="${activePlayerCount}">0</strong> jugadores</span>
+      </div>
     </div>
     <div class="row g-3 mb-5">
-      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/partidos"><span class="feature-kicker">01 · COMPETICIÓN</span><h3>Fixture y resultados</h3><span class="feature-arrow">Consultar partidos <b>→</b></span></a></div>
-      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/tabla"><span class="feature-kicker">02 · CLASIFICACIÓN</span><h3>Tabla de posiciones</h3><span class="feature-arrow">Ver tabla <b>→</b></span></a></div>
-      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/clubes"><span class="feature-kicker">03 · INSTITUCIONAL</span><h3>Clubes de la liga</h3><span class="feature-arrow">Explorar clubes <b>→</b></span></a></div>
-      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/noticias"><span class="feature-kicker">04 · ACTUALIDAD</span><h3>Noticias oficiales</h3><span class="feature-arrow">Leer noticias <b>→</b></span></a></div>
+      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/partidos"><div class="d-flex justify-content-between align-items-center"><span class="feature-kicker">01 · COMPETICIÓN</span><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="12 7 15.5 9.5 14 13.5 10 13.5 8.5 9.5 12 7"/></svg></span></div><h3>Fixture y resultados</h3><span class="feature-arrow">Consultar partidos <b>→</b></span></a></div>
+      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/tabla"><div class="d-flex justify-content-between align-items-center"><span class="feature-kicker">02 · CLASIFICACIÓN</span><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span></div><h3>Tabla de posiciones</h3><span class="feature-arrow">Ver tabla <b>→</b></span></a></div>
+      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/clubes"><div class="d-flex justify-content-between align-items-center"><span class="feature-kicker">03 · 7 DISTRITOS</span><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span></div><h3>Clubes de San Marcos</h3><span class="feature-arrow">Explorar clubes <b>→</b></span></a></div>
+      <div class="col-sm-6 col-lg-3"><a class="feature-card h-100 d-block text-decoration-none" href="/noticias"><div class="d-flex justify-content-between align-items-center"><span class="feature-kicker">04 · ACTUALIDAD</span><span class="feature-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg></span></div><h3>Noticias oficiales</h3><span class="feature-arrow">Leer noticias <b>→</b></span></a></div>
     </div>
+
+    <div class="mb-5" th:if="${districtQuotas != null}">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">REGIÓN CAJAMARCA · PROVINCIA DE SAN MARCOS · SEDE PEDRO GÁLVEZ</span>
+          <h2>Los 7 distritos de San Marcos</h2>
+          <p>En la jurisdicción de la Liga Provincial de San Marcos (Pedro Gálvez) participan como mínimo 6 clubes por cada uno de sus 7 distritos.</p>
+        </div>
+        <a class="link-green fw-bold text-decoration-none" href="/clubes">Filtrar por distrito →</a>
+      </div>
+      <div class="row g-3">
+        <div class="col-sm-6 col-lg-3" th:each="dq : ${districtQuotas}">
+          <a class="club-card h-100 d-block text-decoration-none" th:href="@{/clubes(distrito=${dq.districtName})}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="stage-pill" th:text="${dq.districtName == 'Pedro Gálvez' ? 'Sede Provincial' : 'Distrito'}">Distrito</span>
+              <span class="badge" th:classappend="${dq.complete ? 'text-bg-success' : 'text-bg-warning'}" th:text="${dq.activeClubs + ' / ' + dq.minimumRequired + ' clubes'}">6 / 6 clubes</span>
+            </div>
+            <h3 class="h5 mt-2 mb-1 text-dark" th:text="${dq.districtName}">Pedro Gálvez</h3>
+            <p class="small text-secondary mb-2" th:text="${'Capital: ' + dq.capitalName + ' · ' + dq.stadiumName}">Capital</p>
+            <div class="progress" style="height: 6px;">
+              <div class="progress-bar bg-success" role="progressbar" th:style="${'width:' + dq.progressPercent() + '%'}" th:attr="aria-valuenow=${dq.activeClubs},aria-valuemax=${dq.minimumRequired}" aria-valuemin="0"></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
     <div class="section-heading">
-      <div><span class="eyebrow">ORGULLO DE CADA REGIÓN</span><h2>Clubes activos</h2><p>Los perfiles visibles corresponden a clubes registrados y activos.</p></div>
+      <div><span class="eyebrow">PADRÓN OFICIAL · SAN MARCOS, CAJAMARCA</span><h2>Clubes activos</h2><p>Los perfiles visibles corresponden a clubes registrados y activos en los 7 distritos de la provincia de San Marcos.</p></div>
       <a class="link-green fw-bold text-decoration-none" href="/clubes" th:if="${activeClubCount > 0}">Ver directorio completo →</a>
     </div>
     <div class="row g-3" th:if="${!#lists.isEmpty(clubs)}">
-      <div class="col-sm-6 col-lg-3" th:each="club : ${clubs}">
+      <div class="col-sm-6 col-lg-4" th:each="club : ${clubs}">
         <article class="club-card h-100">
-          <div class="club-mark" aria-hidden="true" th:text="${club.acronym != null ? club.acronym : 'FC'}">FC</div>
-          <h3 th:text="${club.officialName}">Nombre de club</h3>
-          <p class="text-secondary mb-0" th:text="${club.district != null ? club.district : 'Ubicación no publicada'}">Ubicación</p>
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="club-mark mb-0" aria-hidden="true" th:style="${club.primaryColor != null ? 'background:' + club.primaryColor + ';color:#fff;border-color:' + (club.secondaryColor != null ? club.secondaryColor : '#d7b85c') : ''}" th:text="${club.acronym != null ? club.acronym : 'FC'}">FC</div>
+            <span class="stage-pill" th:if="${club.foundedYear != null}" th:text="${'Fund. ' + club.foundedYear}">Fund.</span>
+          </div>
+          <h3 class="mt-3" th:text="${club.officialName}">Nombre de club</h3>
+          <p class="text-secondary mb-1" th:text="${club.district != null ? (club.province != null ? 'Distrito ' + club.district + ' · ' + club.province : club.district) : 'Ubicación no publicada'}">Ubicación</p>
+          <p class="small text-muted mb-0" th:if="${club.stadium != null}" th:text="${'Estadio: ' + club.stadium}">Estadio</p>
         </article>
       </div>
     </div>
@@ -79,17 +126,17 @@
   <section class="band" id="institucional">
     <div class="container band-inner">
       <div>
-        <span class="eyebrow">MÁS QUE FÚTBOL</span>
-        <h2>Una pasión que une al país, desde el barrio hasta la gloria.</h2>
+        <span class="eyebrow">LIGA PROVINCIAL DE FÚTBOL DE SAN MARCOS · SEDE PEDRO GÁLVEZ</span>
+        <h2>7 distritos unidos por la pasión de la Copa Perú en Cajamarca.</h2>
       </div>
-      <p>Consulta calendarios, resultados, posiciones, estadísticas y noticias registradas por la organización. La información pública depende de los datos cargados y validados por sus administradores.</p>
+      <p>Pedro Gálvez, Chancay, Eduardo Villanueva (La Grama), Gregorio Pita (Paucamarca), Ichocán, José Manuel Quiroz (Shirac) y José Sabogal (Venecia) compiten con un mínimo de 6 clubes por distrito rumbo a la Etapa Departamental de Cajamarca.</p>
     </div>
   </section>
 </main>
 <footer class="site-footer">
   <div class="container d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-    <div class="footer-brand"><img src="/images/copa-peru-logo.png" alt=""><span th:text="${leagueName}">Liga Copa Perú</span></div>
-    <span>La pasión nace en cada región.</span>
+    <div class="footer-brand"><img src="/images/copa-peru-logo.png" alt=""><span th:text="${leagueName}">Liga Provincial de San Marcos · Copa Perú</span></div>
+    <span>Sede Pedro Gálvez · Provincia de San Marcos · Región Cajamarca</span>
     <a href="/login">Acceso para administradores</a>
   </div>
 </footer>

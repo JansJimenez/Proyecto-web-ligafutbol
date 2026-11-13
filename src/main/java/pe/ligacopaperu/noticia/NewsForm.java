@@ -6,20 +6,20 @@ import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class NewsForm {
-    @NotBlank
-    @Size(max = 180)
+    @NotBlank(message = "Ingresa el titular del comunicado o nota.")
+    @Size(max = 180, message = "El titular no debe superar 180 caracteres.")
     private String title;
 
-    @NotBlank
-    @Size(max = 300)
+    @NotBlank(message = "Ingresa una bajada o resumen informativo.")
+    @Size(max = 300, message = "El resumen no debe superar 300 caracteres.")
     private String summary;
 
-    @NotBlank
-    @Size(max = 20000)
+    @NotBlank(message = "Escribe el contenido completo de la nota o resolución.")
+    @Size(max = 20000, message = "El contenido no debe superar 20000 caracteres.")
     private String content;
 
-    @Size(max = 80)
-    private String category;
+    @Size(max = 80, message = "La categoría no debe superar 80 caracteres.")
+    private String category = "Copa Perú";
 
     private MultipartFile imageFile;
 
@@ -27,10 +27,10 @@ public class NewsForm {
 
     private String currentImageUrl;
 
-    @Size(max = 180)
+    @Size(max = 180, message = "La descripción SEO no debe superar 180 caracteres.")
     private String seoDescription;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado de publicación.")
     private NewsStatus status = NewsStatus.DRAFT;
 
     public String getTitle() { return title; }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -22,8 +23,10 @@ public class TeamController {
     }
 
     @GetMapping("/equipos")
-    public String publicList(Model model) {
-        model.addAttribute("teams", teams.publicList());
+    public String publicList(@RequestParam(required = false) Long torneo, Model model) {
+        model.addAttribute("teams", teams.publicList(torneo));
+        model.addAttribute("competitions", teams.competitions());
+        model.addAttribute("selectedTorneo", torneo);
         return "public/teams";
     }
 
@@ -78,7 +81,7 @@ public class TeamController {
     }
 
     private void prepareForm(Model model, Long id, String action) {
-        model.addAttribute("clubs", teams.availableClubs());
+        model.addAttribute("clubs", teams.availableClubs(id));
         model.addAttribute("competitions", teams.competitions());
         model.addAttribute("statuses", TeamStatus.values());
         model.addAttribute("action", action);

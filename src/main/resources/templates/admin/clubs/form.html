@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title th:text="${pageTitle} + ' | Liga Copa Perú'">Club | Liga Copa Perú</title>
+  <title th:text="${pageTitle} + ' | Liga Provincial de San Marcos'">Club | Liga Provincial de San Marcos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/site.css" rel="stylesheet">
 </head>
@@ -11,31 +11,53 @@
 <header th:replace="~{fragments/navigation :: adminNavigation}"></header>
 <main class="container section-space form-container">
   <a class="link-green fw-semibold" href="/admin/clubes">← Volver a clubes</a>
-  <span class="eyebrow text-green d-block mt-4">GESTIÓN INSTITUCIONAL</span>
+  <span class="eyebrow text-green d-block mt-4">LIGA PROVINCIAL DE SAN MARCOS · SEDE PEDRO GÁLVEZ · REGIÓN CAJAMARCA</span>
   <h1 th:text="${pageTitle}">Registrar club</h1>
-  <p class="text-secondary">Los campos con * son obligatorios. Los cambios se guardan en la base de datos configurada.</p>
+  <p class="text-secondary">Inscribe el club en uno de los 7 distritos de la provincia de San Marcos (Pedro Gálvez, Chancay, Eduardo Villanueva, Gregorio Pita, Ichocán, José Manuel Quiroz o José Sabogal). Cada distrito cuenta con un mínimo de 6 clubes.</p>
   <form class="card form-card mt-4" method="post" th:action="${formAction}" th:object="${clubForm}">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}" th:errors="*{global}"></div>
     <div class="row g-3">
-      <div class="col-md-8"><label class="form-label" for="officialName">Nombre oficial *</label><input class="form-control" id="officialName" th:field="*{officialName}" required maxlength="150"><div class="text-danger small" th:errors="*{officialName}"></div></div>
-      <div class="col-md-4"><label class="form-label" for="acronym">Siglas</label><input class="form-control text-uppercase" id="acronym" th:field="*{acronym}" maxlength="12"><div class="text-danger small" th:errors="*{acronym}"></div></div>
-      <div class="col-md-6"><label class="form-label" for="shortName">Nombre corto</label><input class="form-control" id="shortName" th:field="*{shortName}" maxlength="80"></div>
-      <div class="col-md-3"><label class="form-label" for="foundedYear">Año de fundación</label><input class="form-control" id="foundedYear" th:field="*{foundedYear}" type="number" min="1800" max="2100"><div class="text-danger small" th:errors="*{foundedYear}"></div></div>
-      <div class="col-md-3"><label class="form-label" for="status">Estado</label><select class="form-select" id="status" th:field="*{status}"><option th:each="statusOption : ${statuses}" th:value="${statusOption}" th:text="${statusOption.name() == 'ACTIVE' ? 'Activo' : 'Inactivo'}"></option></select></div>
-      <div class="col-12"><label class="form-label" for="description">Descripción institucional</label><textarea class="form-control" id="description" rows="3" th:field="*{description}" maxlength="2000"></textarea></div>
-      <div class="col-md-4"><label class="form-label" for="country">País</label><input class="form-control" id="country" th:field="*{country}" maxlength="80"></div>
-      <div class="col-md-4"><label class="form-label" for="department">Departamento</label><input class="form-control" id="department" th:field="*{department}" maxlength="100"></div>
-      <div class="col-md-4"><label class="form-label" for="province">Provincia</label><input class="form-control" id="province" th:field="*{province}" maxlength="100"></div>
-      <div class="col-md-4"><label class="form-label" for="district">Distrito</label><input class="form-control" id="district" th:field="*{district}" maxlength="100"></div>
-      <div class="col-md-8"><label class="form-label" for="stadium">Estadio habitual</label><input class="form-control" id="stadium" th:field="*{stadium}" maxlength="150"></div>
-      <div class="col-md-6"><label class="form-label" for="president">Presidente o representante</label><input class="form-control" id="president" th:field="*{president}" maxlength="120"></div>
-      <div class="col-md-6"><label class="form-label" for="delegateName">Delegado</label><input class="form-control" id="delegateName" th:field="*{delegateName}" maxlength="120"></div>
-      <div class="col-md-4"><label class="form-label" for="phone">Teléfono</label><input class="form-control" id="phone" th:field="*{phone}" maxlength="40"></div>
-      <div class="col-md-4"><label class="form-label" for="email">Correo</label><input class="form-control" id="email" th:field="*{email}" type="email" maxlength="180"><div class="text-danger small" th:errors="*{email}"></div></div>
-      <div class="col-md-4"><label class="form-label" for="website">Sitio web</label><input class="form-control" id="website" th:field="*{website}" type="url" maxlength="255"></div>
-      <div class="col-md-6"><label class="form-label" for="primaryColor">Color principal</label><input class="form-control form-control-color" id="primaryColor" th:field="*{primaryColor}" type="color" title="Color principal"></div>
-      <div class="col-md-6"><label class="form-label" for="secondaryColor">Color secundario</label><input class="form-control form-control-color" id="secondaryColor" th:field="*{secondaryColor}" type="color" title="Color secundario"></div>
+      <div class="col-md-8"><label class="form-label" for="officialName">Nombre oficial *</label><input class="form-control" id="officialName" th:field="*{officialName}" placeholder="Ej.: Club Deportivo Cultural San Marcos" required maxlength="150"><div class="text-danger small" th:errors="*{officialName}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="acronym">Siglas</label><input class="form-control text-uppercase" id="acronym" th:field="*{acronym}" placeholder="Ej.: CDCSM" maxlength="12"><div class="text-danger small" th:errors="*{acronym}"></div></div>
+      <div class="col-md-6"><label class="form-label" for="shortName">Nombre corto / apelativo</label><input class="form-control" id="shortName" th:field="*{shortName}" placeholder="Ej.: Cultural San Marcos" maxlength="80"><div class="text-danger small" th:errors="*{shortName}"></div></div>
+      <div class="col-md-3"><label class="form-label" for="foundedYear">Año de fundación</label><input class="form-control" id="foundedYear" th:field="*{foundedYear}" type="number" min="1800" max="2100" placeholder="Ej.: 1968"><div class="text-danger small" th:errors="*{foundedYear}"></div></div>
+      <div class="col-md-3"><label class="form-label" for="status">Estado en liga</label><select class="form-select" id="status" th:field="*{status}"><option th:each="statusOption : ${statuses}" th:value="${statusOption}" th:text="${statusOption.name() == 'ACTIVE' ? 'Activo' : 'Inactivo'}"></option></select><div class="text-danger small" th:errors="*{status}"></div></div>
+      <div class="col-12"><label class="form-label" for="description">Reseña histórica y palmarés en Copa Perú</label><textarea class="form-control" id="description" rows="3" th:field="*{description}" placeholder="Participación en su Liga Distrital y en la Liga Provincial de San Marcos (Sede Pedro Gálvez)..." maxlength="2000"></textarea><div class="text-danger small" th:errors="*{description}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="country">País</label><input class="form-control" id="country" th:field="*{country}" maxlength="80"><div class="text-danger small" th:errors="*{country}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="department">Región / Departamento (LDF)</label><input class="form-control" id="department" th:field="*{department}" list="departamentosPeru" placeholder="Cajamarca" maxlength="100"><div class="text-danger small" th:errors="*{department}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="province">Provincia (Liga Provincial)</label><input class="form-control" id="province" th:field="*{province}" placeholder="San Marcos" maxlength="100"><div class="text-danger small" th:errors="*{province}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="district">Distrito (7 distritos de San Marcos)</label><input class="form-control" id="district" th:field="*{district}" list="distritosSanMarcos" placeholder="Ej.: Pedro Gálvez, Chancay, Ichocán..." maxlength="100"><div class="text-danger small" th:errors="*{district}"></div></div>
+      <div class="col-md-8"><label class="form-label" for="stadium">Estadio habitual</label><input class="form-control" id="stadium" th:field="*{stadium}" list="estadiosSanMarcos" placeholder="Ej.: Estadio Municipal de San Marcos (Pedro Gálvez)" maxlength="150"><div class="text-danger small" th:errors="*{stadium}"></div></div>
+      <div class="col-md-6"><label class="form-label" for="president">Presidente de la junta directiva</label><input class="form-control" id="president" th:field="*{president}" maxlength="120"><div class="text-danger small" th:errors="*{president}"></div></div>
+      <div class="col-md-6"><label class="form-label" for="delegateName">Delegado acreditado ante la Liga Provincial de San Marcos</label><input class="form-control" id="delegateName" th:field="*{delegateName}" maxlength="120"><div class="text-danger small" th:errors="*{delegateName}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="phone">Teléfono de contacto</label><input class="form-control" id="phone" th:field="*{phone}" type="tel" placeholder="Ej.: +51 976 000 000" maxlength="40"><div class="text-danger small" th:errors="*{phone}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="email">Correo institucional</label><input class="form-control" id="email" th:field="*{email}" type="email" placeholder="secretaria@club.pe" maxlength="180"><div class="text-danger small" th:errors="*{email}"></div></div>
+      <div class="col-md-4"><label class="form-label" for="website">Sitio web o red oficial</label><input class="form-control" id="website" th:field="*{website}" type="url" placeholder="https://..." maxlength="255"><div class="text-danger small" th:errors="*{website}"></div></div>
+      <div class="col-md-6"><label class="form-label" for="primaryColor">Color principal de camiseta</label><input class="form-control form-control-color" id="primaryColor" th:field="*{primaryColor}" type="color" title="Color principal"><div class="text-danger small" th:errors="*{primaryColor}"></div></div>
+      <div class="col-md-6"><label class="form-label" for="secondaryColor">Color alterno de camiseta</label><input class="form-control form-control-color" id="secondaryColor" th:field="*{secondaryColor}" type="color" title="Color secundario"><div class="text-danger small" th:errors="*{secondaryColor}"></div></div>
     </div>
+    <datalist id="distritosSanMarcos">
+      <option value="Pedro Gálvez">Sede de la Liga Provincial (Capital: San Marcos)</option>
+      <option value="Chancay">Capital: Chancay</option>
+      <option value="Eduardo Villanueva">Capital: La Grama</option>
+      <option value="Gregorio Pita">Capital: Paucamarca</option>
+      <option value="Ichocán">Capital: Ichocán</option>
+      <option value="José Manuel Quiroz">Capital: Shirac</option>
+      <option value="José Sabogal">Capital: Venecia</option>
+    </datalist>
+    <datalist id="estadiosSanMarcos">
+      <option value="Estadio Municipal de San Marcos (Pedro Gálvez)"></option>
+      <option value="Estadio Municipal de Chancay"></option>
+      <option value="Estadio Municipal de La Grama (Eduardo Villanueva)"></option>
+      <option value="Estadio Municipal de Paucamarca (Gregorio Pita)"></option>
+      <option value="Estadio Municipal de Ichocán"></option>
+      <option value="Estadio Municipal de Shirac (José Manuel Quiroz)"></option>
+      <option value="Estadio Municipal de Venecia (José Sabogal)"></option>
+    </datalist>
+    <datalist id="departamentosPeru">
+      <option value="Cajamarca"></option><option value="Amazonas"></option><option value="Áncash"></option><option value="Apurímac"></option><option value="Arequipa"></option><option value="Ayacucho"></option><option value="Callao"></option><option value="Cusco"></option><option value="Huancavelica"></option><option value="Huánuco"></option><option value="Ica"></option><option value="Junín"></option><option value="La Libertad"></option><option value="Lambayeque"></option><option value="Lima"></option><option value="Loreto"></option><option value="Madre de Dios"></option><option value="Moquegua"></option><option value="Pasco"></option><option value="Piura"></option><option value="Puno"></option><option value="San Martín"></option><option value="Tacna"></option><option value="Tumbes"></option><option value="Ucayali"></option>
+    </datalist>
     <div class="d-flex flex-wrap justify-content-end gap-2 mt-4"><a class="btn btn-outline-secondary" href="/admin/clubes">Cancelar</a><button class="btn btn-lime" type="submit">Guardar club</button></div>
   </form>
 </main>

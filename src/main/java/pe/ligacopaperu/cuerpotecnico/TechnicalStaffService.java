@@ -1,9 +1,16 @@
 package pe.ligacopaperu.cuerpotecnico;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.cloud.firestore.Firestore;
 
 import pe.ligacopaperu.archivo.ArchivoStorageService;
 import pe.ligacopaperu.auditoria.AuditService;
@@ -14,17 +21,28 @@ import pe.ligacopaperu.equipo.TeamStatus;
 
 @Service
 public class TechnicalStaffService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TechnicalStaffService.class);
+
     private final TechnicalStaffRepository staff;
     private final TeamRepository teams;
     private final AuditService audit;
     private final ArchivoStorageService storage;
+    private final Firestore firestore;
 
+    @Autowired
     public TechnicalStaffService(TechnicalStaffRepository staff, TeamRepository teams, AuditService audit,
-            ArchivoStorageService storage) {
+            ArchivoStorageService storage, Firestore firestore) {
         this.staff = staff;
         this.teams = teams;
         this.audit = audit;
         this.storage = storage;
+        this.firestore = firestore;
+    }
+
+    public TechnicalStaffService(TechnicalStaffRepository staff, TeamRepository teams, AuditService audit,
+            ArchivoStorageService storage) {
+        this(staff, teams, audit, storage, null);
     }
 
     @Transactional(readOnly = true)
@@ -34,17 +52,30 @@ public class TechnicalStaffService {
 
     @Transactional(readOnly = true)
     public List<TechnicalStaff> publicList() {
-        return staff.findByStatusOrderByLastNameAscFirstNameAsc(StaffStatus.ACTIVE).stream()
-                .filter(person -> person.getTeam().getStatus() == TeamStatus.ACTIVE
-                        && person.getTeam().getClub().getStatus() == ClubStatus.ACTIVE)
-                .toList();
+        return staff.findByStatusAndTeamStatusAndTeamClubStatusOrderByLastNameAscFirstNameAsc(
+                StaffStatus.ACTIVE, TeamStatus.ACTIVE, ClubStatus.ACTIVE);
     }
 
     @Transactional(readOnly = true)
     public List<Team> activeTeams() {
-        return teams.findAllByOrderByNameAsc().stream()
-                .filter(team -> team.getStatus() == TeamStatus.ACTIVE)
-                .toList();
+        return teams.findByStatusOrderByNameAsc(TeamStatus.ACTIVE);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Team> availableTeams(Long staffId) {
+        List<Team> active = activeTeams();
+        if (staffId == null) {
+            return active;
+        }
+        return staff.findById(staffId)
+                .map(person -> person.getTeam())
+                .filter(team -> active.stream().noneMatch(item -> item.getId().equals(team.getId())))
+                .map(team -> {
+                    java.util.ArrayList<Team> combined = new java.util.ArrayList<>(active);
+                    combined.add(team);
+                    return (List<Team>) combined;
+                })
+                .orElse(active);
     }
 
     @Transactional(readOnly = true)
@@ -67,7 +98,8 @@ public class TechnicalStaffService {
     public TechnicalStaff save(Long id, TechnicalStaffForm form, String actor) {
         TechnicalStaff person = id == null ? new TechnicalStaff() : find(id);
         Team team = teams.findById(form.getTeamId())
-                .filter(value -> value.getStatus() == TeamStatus.ACTIVE)
+                .filter(value -> value.getStatus() == TeamStatus.ACTIVE
+                        || (id != null && person.getTeam() != null && person.getTeam().getId().equals(value.getId())))
                 .orElseThrow(() -> new IllegalArgumentException("Selecciona un equipo activo."));
         person.setTeam(team);
         person.setFirstName(form.getFirstName().trim());
@@ -80,6 +112,7 @@ public class TechnicalStaffService {
                 form.getIdentityDocumentFile(), form.isRemoveIdentityDocument()));
         person.setStatus(form.getStatus());
         TechnicalStaff saved = staff.save(person);
+        syncToFirestore(saved);
         audit.record(actor, id == null ? "STAFF_CREATED" : "STAFF_UPDATED",
                 "TECHNICAL_STAFF", saved.getId(), saved.getFullName() + " · " + saved.getRole());
         return saved;
@@ -89,12 +122,37 @@ public class TechnicalStaffService {
     public void deactivate(long id, String actor) {
         TechnicalStaff person = find(id);
         person.setStatus(StaffStatus.INACTIVE);
-        audit.record(actor, "STAFF_DEACTIVATED", "TECHNICAL_STAFF", id, person.getFullName());
+        TechnicalStaff saved = staff.save(person);
+        syncToFirestore(saved);
+        audit.record(actor, "STAFF_DEACTIVATED", "TECHNICAL_STAFF", id, saved.getFullName());
     }
 
     private TechnicalStaff find(long id) {
         return staff.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Integrante del cuerpo técnico no encontrado."));
+    }
+
+    @SuppressWarnings("null")
+    private void syncToFirestore(TechnicalStaff person) {
+        if (firestore == null || person == null || person.getId() == null) {
+            return;
+        }
+        try {
+            Map<String, Object> doc = new LinkedHashMap<>();
+            doc.put("id", person.getId());
+            doc.put("teamId", person.getTeam() != null ? person.getTeam().getId() : null);
+            doc.put("firstName", person.getFirstName());
+            doc.put("lastName", person.getLastName());
+            doc.put("role", person.getRole() != null ? person.getRole().name() : null);
+            doc.put("email", person.getEmail());
+            doc.put("phone", person.getPhone());
+            doc.put("photoUrl", person.getPhotoUrl());
+            doc.put("identityDocumentUrl", person.getIdentityDocumentUrl());
+            doc.put("status", person.getStatus() != null ? person.getStatus().name() : null);
+            firestore.collection("technical_staff").document(java.util.Objects.requireNonNull(String.valueOf(person.getId()))).set(doc);
+        } catch (Exception exception) {
+            LOGGER.warn("No se pudo sincronizar el cuerpo técnico en Firestore.", exception);
+        }
     }
 
     private String clean(String value) {

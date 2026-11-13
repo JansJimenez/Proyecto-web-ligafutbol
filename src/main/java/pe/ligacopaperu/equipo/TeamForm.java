@@ -6,23 +6,23 @@ import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class TeamForm {
-    @NotNull
+    @NotNull(message = "Selecciona el club al que representa el equipo.")
     private Long clubId;
 
-    @NotNull
+    @NotNull(message = "Selecciona el torneo o etapa en la que compite.")
     private Long competitionId;
 
-    @NotBlank
-    @Size(max = 120)
+    @NotBlank(message = "Ingresa el nombre competitivo del equipo.")
+    @Size(max = 120, message = "El nombre del equipo no debe superar 120 caracteres.")
     private String name;
 
-    @Size(max = 60)
+    @Size(max = 60, message = "El nombre corto no debe superar 60 caracteres.")
     private String shortName;
 
-    @Size(max = 60)
+    @Size(max = 60, message = "El grupo o serie no debe superar 60 caracteres.")
     private String groupName;
 
-    @Size(max = 150)
+    @Size(max = 150, message = "El estadio local no debe superar 150 caracteres.")
     private String stadium;
 
     private MultipartFile crestFile;
@@ -31,7 +31,7 @@ public class TeamForm {
 
     private String crestUrl;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado del equipo.")
     private TeamStatus status = TeamStatus.ACTIVE;
 
     public Long getClubId() { return clubId; }

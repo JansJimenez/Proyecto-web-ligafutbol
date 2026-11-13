@@ -78,7 +78,7 @@ public class TechnicalStaffController {
     }
 
     private void prepareForm(Model model, Long id, String action) {
-        model.addAttribute("teams", staff.activeTeams());
+        model.addAttribute("teams", staff.availableTeams(id));
         model.addAttribute("roles", StaffRole.values());
         model.addAttribute("statuses", StaffStatus.values());
         model.addAttribute("action", action);

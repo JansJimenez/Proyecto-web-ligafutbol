@@ -1,6 +1,5 @@
 package pe.ligacopaperu.estadistica;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +73,7 @@ public class StandingsService {
                         .thenComparing(Comparator.comparingInt(
                                 (MutableStanding row) -> row.goalsFor).reversed())
                         .thenComparing(row -> row.team.getName(), String.CASE_INSENSITIVE_ORDER))
-                .map(MutableStanding::toRow)
+                .map(row -> row.toRow())
                 .toList();
     }
 
@@ -94,7 +93,7 @@ public class StandingsService {
 
         private StandingRow toRow() {
             return new StandingRow(team.getId(), team.getName(), team.getClub().getOfficialName(),
-                    played, won, drawn, lost, goalsFor, goalsAgainst, points);
+                    team.getGroupName(), played, won, drawn, lost, goalsFor, goalsAgainst, points);
         }
     }
 }

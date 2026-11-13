@@ -8,33 +8,33 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class CompetitionForm {
-    @NotBlank
-    @Size(max = 150)
+    @NotBlank(message = "Ingresa el nombre oficial del torneo o etapa.")
+    @Size(max = 150, message = "El nombre del torneo no debe superar 150 caracteres.")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Selecciona la temporada a la que pertenece el torneo.")
     private Long seasonId;
 
-    @NotBlank
-    @Size(max = 80)
-    private String category;
+    @NotBlank(message = "Indica la etapa o categoría (ej. Etapa Distrital, Etapa Provincial).")
+    @Size(max = 80, message = "La categoría o etapa no debe superar 80 caracteres.")
+    private String category = "Etapa Distrital · Primera División";
 
     private LocalDate startDate;
     private LocalDate endDate;
 
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Indica los puntos por partido ganado.")
+    @Min(value = 0, message = "Los puntos por victoria no pueden ser negativos.")
     private Integer pointsWin = 3;
 
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Indica los puntos por partido empatado.")
+    @Min(value = 0, message = "Los puntos por empate no pueden ser negativos.")
     private Integer pointsDraw = 1;
 
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Indica los puntos por partido perdido.")
+    @Min(value = 0, message = "Los puntos por derrota no pueden ser negativos.")
     private Integer pointsLoss = 0;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado del torneo.")
     private CompetitionStatus status = CompetitionStatus.PLANNED;
 
     public String getName() { return name; }

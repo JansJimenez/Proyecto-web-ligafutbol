@@ -6,23 +6,23 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class MatchEventForm {
-    @NotNull
+    @NotNull(message = "Selecciona el equipo al que corresponde la incidencia.")
     private Long teamId;
 
-    @NotNull
+    @NotNull(message = "Selecciona el jugador protagonista del evento.")
     private Long playerId;
 
     private Long relatedPlayerId;
 
-    @NotNull
-    @Min(0)
-    @Max(150)
+    @NotNull(message = "Ingresa el minuto oficial del evento.")
+    @Min(value = 0, message = "El minuto debe estar entre 0 y 150.")
+    @Max(value = 150, message = "El minuto debe estar entre 0 y 150.")
     private Integer minute;
 
-    @NotNull
+    @NotNull(message = "Selecciona el tipo de incidencia para el acta.")
     private MatchEventType type;
 
-    @Size(max = 500)
+    @Size(max = 500, message = "Las observaciones del árbitro o mesa no deben superar 500 caracteres.")
     private String notes;
 
     public Long getTeamId() { return teamId; }

@@ -11,4 +11,8 @@ public interface TechnicalStaffRepository extends JpaRepository<TechnicalStaff, 
 
     @EntityGraph(attributePaths = {"team", "team.club", "team.competition"})
     List<TechnicalStaff> findByStatusOrderByLastNameAscFirstNameAsc(StaffStatus status);
+
+    @EntityGraph(attributePaths = {"team", "team.club", "team.competition"})
+    List<TechnicalStaff> findByStatusAndTeamStatusAndTeamClubStatusOrderByLastNameAscFirstNameAsc(
+            StaffStatus status, pe.ligacopaperu.equipo.TeamStatus teamStatus, pe.ligacopaperu.club.ClubStatus clubStatus);
 }

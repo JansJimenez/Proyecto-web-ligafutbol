@@ -2,12 +2,19 @@ package pe.ligacopaperu.noticia;
 
 import java.text.Normalizer;
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.cloud.firestore.Firestore;
 
 import pe.ligacopaperu.archivo.ArchivoStorageService;
 import pe.ligacopaperu.auditoria.AuditService;
@@ -16,16 +23,27 @@ import pe.ligacopaperu.seguridad.UserRepository;
 
 @Service
 public class NewsService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NewsService.class);
+
     private final NewsRepository news;
     private final UserRepository users;
     private final AuditService audit;
     private final ArchivoStorageService storage;
+    private final Firestore firestore;
 
-    public NewsService(NewsRepository news, UserRepository users, AuditService audit, ArchivoStorageService storage) {
+    @Autowired
+    public NewsService(NewsRepository news, UserRepository users, AuditService audit, ArchivoStorageService storage,
+            Firestore firestore) {
         this.news = news;
         this.users = users;
         this.audit = audit;
         this.storage = storage;
+        this.firestore = firestore;
+    }
+
+    public NewsService(NewsRepository news, UserRepository users, AuditService audit, ArchivoStorageService storage) {
+        this(news, users, audit, storage, null);
     }
 
     @Transactional(readOnly = true)
@@ -36,6 +54,11 @@ public class NewsService {
     @Transactional(readOnly = true)
     public List<NewsArticle> publicList() {
         return news.findByStatusOrderByPublishedAtDesc(NewsStatus.PUBLISHED);
+    }
+
+    @Transactional(readOnly = true)
+    public long countPublished() {
+        return news.countByStatus(NewsStatus.PUBLISHED);
     }
 
     @Transactional(readOnly = true)
@@ -84,6 +107,7 @@ public class NewsService {
         }
         article.setSlug(slug);
         NewsArticle saved = news.save(article);
+        syncToFirestore(saved);
         audit.record(username, id == null ? "NEWS_CREATED" : "NEWS_UPDATED",
                 "NEWS", saved.getId(), saved.getTitle() + " (" + saved.getStatus() + ")");
         return saved;
@@ -93,11 +117,38 @@ public class NewsService {
     public void archive(long id, String username) {
         NewsArticle article = find(id);
         article.setStatus(NewsStatus.ARCHIVED);
-        audit.record(username, "NEWS_ARCHIVED", "NEWS", id, article.getTitle());
+        NewsArticle saved = news.save(article);
+        syncToFirestore(saved);
+        audit.record(username, "NEWS_ARCHIVED", "NEWS", id, saved.getTitle());
     }
 
     private NewsArticle find(long id) {
         return news.findById(id).orElseThrow(() -> new IllegalArgumentException("Noticia no encontrada."));
+    }
+
+    @SuppressWarnings("null")
+    private void syncToFirestore(NewsArticle article) {
+        if (firestore == null || article == null || article.getId() == null) {
+            return;
+        }
+        try {
+            Map<String, Object> doc = new LinkedHashMap<>();
+            doc.put("id", article.getId());
+            doc.put("title", article.getTitle());
+            doc.put("slug", article.getSlug());
+            doc.put("summary", article.getSummary());
+            doc.put("content", article.getContent());
+            doc.put("category", article.getCategory());
+            doc.put("imageUrl", article.getImageUrl());
+            doc.put("seoDescription", article.getSeoDescription());
+            doc.put("authorId", article.getAuthor() != null ? article.getAuthor().getId() : null);
+            doc.put("status", article.getStatus() != null ? article.getStatus().name() : null);
+            doc.put("createdAt", article.getCreatedAt() != null ? article.getCreatedAt().toString() : null);
+            doc.put("publishedAt", article.getPublishedAt() != null ? article.getPublishedAt().toString() : null);
+            firestore.collection("news_articles").document(java.util.Objects.requireNonNull(String.valueOf(article.getId()))).set(doc);
+        } catch (Exception exception) {
+            LOGGER.warn("No se pudo sincronizar la noticia en Firestore.", exception);
+        }
     }
 
     private String slugify(String value) {

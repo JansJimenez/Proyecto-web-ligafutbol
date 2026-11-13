@@ -1,10 +1,17 @@
 package pe.ligacopaperu.partido;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.cloud.firestore.Firestore;
 
 import pe.ligacopaperu.auditoria.AuditService;
 import pe.ligacopaperu.equipo.Team;
@@ -15,24 +22,49 @@ import pe.ligacopaperu.torneo.CompetitionRepository;
 
 @Service
 public class MatchService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatchService.class);
+
     private final MatchRepository matches;
     private final CompetitionRepository competitions;
     private final TeamRepository teams;
     private final MatchEventRepository events;
     private final AuditService audit;
+    private final Firestore firestore;
 
+    @Autowired
     public MatchService(MatchRepository matches, CompetitionRepository competitions,
-            TeamRepository teams, MatchEventRepository events, AuditService audit) {
+            TeamRepository teams, MatchEventRepository events, AuditService audit, Firestore firestore) {
         this.matches = matches;
         this.competitions = competitions;
         this.teams = teams;
         this.events = events;
         this.audit = audit;
+        this.firestore = firestore;
+    }
+
+    public MatchService(MatchRepository matches, CompetitionRepository competitions,
+            TeamRepository teams, MatchEventRepository events, AuditService audit) {
+        this(matches, competitions, teams, events, audit, null);
     }
 
     @Transactional(readOnly = true)
     public List<Match> list() {
         return matches.findAllByOrderByScheduledAtAsc();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Match> publicList(Long competitionId) {
+        List<MatchStatus> publicStatuses = List.of(MatchStatus.SCHEDULED, MatchStatus.FINALIZED);
+        if (competitionId != null) {
+            return matches.findByCompetitionIdAndStatusInOrderByScheduledAtAsc(competitionId, publicStatuses);
+        }
+        return matches.findByStatusInOrderByScheduledAtAsc(publicStatuses);
+    }
+
+    @Transactional(readOnly = true)
+    public long countFinalized() {
+        return matches.countByStatus(MatchStatus.FINALIZED);
     }
 
     @Transactional(readOnly = true)
@@ -42,9 +74,7 @@ public class MatchService {
 
     @Transactional(readOnly = true)
     public List<Team> activeTeams() {
-        return teams.findAllByOrderByNameAsc().stream()
-                .filter(team -> team.getStatus() == TeamStatus.ACTIVE)
-                .toList();
+        return teams.findByStatusOrderByNameAsc(TeamStatus.ACTIVE);
     }
 
     @Transactional(readOnly = true)
@@ -87,7 +117,19 @@ public class MatchService {
         if (form.getStatus() == MatchStatus.FINALIZED) {
             validateGoalEvents(form, home, away, id);
         }
+        if (form.getStatus() == MatchStatus.CANCELLED) {
+            form.setHomeGoals(null);
+            form.setAwayGoals(null);
+        }
         Match match = id == null ? new Match() : find(id);
+        if (id != null && events.countByMatchId(id) > 0) {
+            if (!match.getCompetition().getId().equals(competition.getId())
+                    || !match.getHomeTeam().getId().equals(home.getId())
+                    || !match.getAwayTeam().getId().equals(away.getId())) {
+                throw new IllegalArgumentException(
+                        "No se puede cambiar el torneo ni los equipos porque el partido ya tiene eventos en el acta.");
+            }
+        }
         match.setCompetition(competition);
         match.setHomeTeam(home);
         match.setAwayTeam(away);
@@ -98,6 +140,7 @@ public class MatchService {
         match.setAwayGoals(form.getAwayGoals());
         match.setStatus(form.getStatus());
         Match saved = matches.save(match);
+        syncToFirestore(saved);
         String details = home.getName() + " vs " + away.getName()
                 + (form.getStatus() == MatchStatus.FINALIZED
                         ? " " + form.getHomeGoals() + "-" + form.getAwayGoals()
@@ -135,6 +178,29 @@ public class MatchService {
         if (hasGoalEvents && (homeGoals != form.getHomeGoals() || awayGoals != form.getAwayGoals())) {
             throw new IllegalArgumentException(
                     "El marcador no coincide con los goles y autogoles registrados en el acta.");
+        }
+    }
+
+    @SuppressWarnings("null")
+    private void syncToFirestore(Match match) {
+        if (firestore == null || match == null || match.getId() == null) {
+            return;
+        }
+        try {
+            Map<String, Object> doc = new LinkedHashMap<>();
+            doc.put("id", match.getId());
+            doc.put("competitionId", match.getCompetition() != null ? match.getCompetition().getId() : null);
+            doc.put("homeTeamId", match.getHomeTeam() != null ? match.getHomeTeam().getId() : null);
+            doc.put("awayTeamId", match.getAwayTeam() != null ? match.getAwayTeam().getId() : null);
+            doc.put("roundNumber", match.getRoundNumber());
+            doc.put("scheduledAt", match.getScheduledAt() != null ? match.getScheduledAt().toString() : null);
+            doc.put("stadium", match.getStadium());
+            doc.put("homeGoals", match.getHomeGoals());
+            doc.put("awayGoals", match.getAwayGoals());
+            doc.put("status", match.getStatus() != null ? match.getStatus().name() : null);
+            firestore.collection("matches").document(java.util.Objects.requireNonNull(String.valueOf(match.getId()))).set(doc);
+        } catch (Exception exception) {
+            LOGGER.warn("No se pudo sincronizar el partido en Firestore.", exception);
         }
     }
 

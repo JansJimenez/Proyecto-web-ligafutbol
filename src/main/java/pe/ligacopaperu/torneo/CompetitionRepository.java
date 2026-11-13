@@ -11,4 +11,6 @@ public interface CompetitionRepository extends JpaRepository<Competition, Long> 
 
     @EntityGraph(attributePaths = "season")
     List<Competition> findAll(org.springframework.data.domain.Sort sort);
+
+    boolean existsBySeasonIdAndNameIgnoreCase(Long seasonId, String name);
 }

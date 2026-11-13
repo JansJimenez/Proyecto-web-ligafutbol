@@ -3,29 +3,31 @@ package pe.ligacopaperu.cuerpotecnico;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 public class TechnicalStaffForm {
-    @NotNull
+    @NotNull(message = "Selecciona el equipo al que pertenece el integrante.")
     private Long teamId;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Ingresa los nombres del integrante del comando técnico.")
+    @Size(max = 100, message = "Los nombres no deben superar 100 caracteres.")
     private String firstName;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Ingresa los apellidos del integrante del comando técnico.")
+    @Size(max = 100, message = "Los apellidos no deben superar 100 caracteres.")
     private String lastName;
 
-    @NotNull
+    @NotNull(message = "Selecciona el cargo dentro del comando técnico.")
     private StaffRole role = StaffRole.OTHER;
 
-    @Email
-    @Size(max = 254)
+    @Email(message = "Ingresa un correo electrónico válido.")
+    @Size(max = 254, message = "El correo no debe superar 254 caracteres.")
     private String email;
 
-    @Size(max = 30)
+    @Size(max = 30, message = "El teléfono no debe superar 30 caracteres.")
+    @Pattern(regexp = "^$|^[0-9+()\\-\\s]{6,25}$", message = "Ingresa un teléfono válido (6 a 25 dígitos).")
     private String phone;
 
     private MultipartFile photoFile;
@@ -40,7 +42,7 @@ public class TechnicalStaffForm {
 
     private String identityDocumentUrl;
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado de acreditación.")
     private StaffStatus status = StaffStatus.ACTIVE;
 
     public Long getTeamId() { return teamId; }

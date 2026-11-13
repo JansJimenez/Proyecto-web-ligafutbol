@@ -10,63 +10,65 @@ import jakarta.validation.constraints.Size;
 
 public class ClubForm {
 
-    @NotBlank
-    @Size(max = 150)
+    @NotBlank(message = "Ingresa el nombre oficial del club.")
+    @Size(max = 150, message = "El nombre oficial no debe superar 150 caracteres.")
     private String officialName;
 
-    @Size(max = 80)
+    @Size(max = 80, message = "El nombre corto no debe superar 80 caracteres.")
     private String shortName;
 
-    @Size(max = 12)
+    @Size(max = 12, message = "La sigla no debe superar 12 caracteres.")
     private String acronym;
 
-    @Size(max = 2000)
+    @Size(max = 2000, message = "La reseña histórica no debe superar 2000 caracteres.")
     private String description;
 
-    @Min(1800)
-    @Max(2100)
+    @Min(value = 1800, message = "El año de fundación debe ser igual o posterior a 1800.")
+    @Max(value = 2100, message = "El año de fundación no puede superar 2100.")
     private Integer foundedYear;
 
-    @Size(max = 80)
-    private String country;
+    @Size(max = 80, message = "El país no debe superar 80 caracteres.")
+    private String country = "Perú";
 
-    @Size(max = 100)
-    private String department;
+    @Size(max = 100, message = "El departamento no debe superar 100 caracteres.")
+    private String department = "Cajamarca";
 
-    @Size(max = 100)
-    private String province;
+    @Size(max = 100, message = "La provincia no debe superar 100 caracteres.")
+    private String province = "San Marcos";
 
-    @Size(max = 100)
-    private String district;
+    @Size(max = 100, message = "El distrito no debe superar 100 caracteres.")
+    private String district = "Pedro Gálvez";
 
-    @Size(max = 150)
+    @Size(max = 150, message = "El estadio no debe superar 150 caracteres.")
     private String stadium;
 
-    @Size(max = 120)
+    @Size(max = 120, message = "El nombre del presidente no debe superar 120 caracteres.")
     private String president;
 
-    @Size(max = 120)
+    @Size(max = 120, message = "El nombre del delegado ante la liga no debe superar 120 caracteres.")
     private String delegateName;
 
-    @Size(max = 40)
+    @Size(max = 40, message = "El teléfono no debe superar 40 caracteres.")
+    @Pattern(regexp = "^$|^[0-9+()\\-\\s]{6,25}$", message = "Ingresa un número telefónico válido (6 a 25 dígitos).")
     private String phone;
 
-    @Email
-    @Size(max = 180)
+    @Email(message = "Ingresa un correo electrónico institucional válido.")
+    @Size(max = 180, message = "El correo no debe superar 180 caracteres.")
     private String email;
 
-    @Size(max = 255)
+    @Size(max = 255, message = "El sitio web no debe superar 255 caracteres.")
+    @Pattern(regexp = "^$|^https?://.+", message = "El sitio web debe iniciar con http:// o https://.")
     private String website;
 
     @Size(max = 7)
-    @Pattern(regexp = "^$|^#[0-9a-fA-F]{6}$")
-    private String primaryColor;
+    @Pattern(regexp = "^$|^#[0-9a-fA-F]{6}$", message = "Usa formato hexadecimal (#RRGGBB), por ejemplo #df1732.")
+    private String primaryColor = "#df1732";
 
     @Size(max = 7)
-    @Pattern(regexp = "^$|^#[0-9a-fA-F]{6}$")
-    private String secondaryColor;
+    @Pattern(regexp = "^$|^#[0-9a-fA-F]{6}$", message = "Usa formato hexadecimal (#RRGGBB), por ejemplo #ffffff.")
+    private String secondaryColor = "#ffffff";
 
-    @NotNull
+    @NotNull(message = "Selecciona el estado del club.")
     private ClubStatus status = ClubStatus.ACTIVE;
 
     public String getOfficialName() { return officialName; }

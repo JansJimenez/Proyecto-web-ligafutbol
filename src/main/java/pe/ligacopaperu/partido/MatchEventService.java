@@ -1,9 +1,16 @@
 package pe.ligacopaperu.partido;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.cloud.firestore.Firestore;
 
 import pe.ligacopaperu.auditoria.AuditService;
 import pe.ligacopaperu.equipo.Team;
@@ -14,17 +21,28 @@ import pe.ligacopaperu.jugador.PlayerStatus;
 
 @Service
 public class MatchEventService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MatchEventService.class);
+
     private final MatchRepository matches;
     private final MatchEventRepository events;
     private final PlayerRepository players;
     private final AuditService audit;
+    private final Firestore firestore;
 
+    @Autowired
     public MatchEventService(MatchRepository matches, MatchEventRepository events,
-            PlayerRepository players, AuditService audit) {
+            PlayerRepository players, AuditService audit, Firestore firestore) {
         this.matches = matches;
         this.events = events;
         this.players = players;
         this.audit = audit;
+        this.firestore = firestore;
+    }
+
+    public MatchEventService(MatchRepository matches, MatchEventRepository events,
+            PlayerRepository players, AuditService audit) {
+        this(matches, events, players, audit, null);
     }
 
     @Transactional(readOnly = true)
@@ -79,6 +97,10 @@ public class MatchEventService {
         } else if (form.getRelatedPlayerId() != null) {
             throw new IllegalArgumentException("El jugador relacionado solo aplica a sustituciones.");
         }
+        if (form.getType() == MatchEventType.RED_CARD
+                && events.existsByMatchIdAndPlayerIdAndType(matchId, player.getId(), MatchEventType.RED_CARD)) {
+            throw new IllegalArgumentException("El jugador ya registra una tarjeta roja en el acta de este partido.");
+        }
         MatchEvent event = new MatchEvent();
         event.setMatch(match);
         event.setTeam(team);
@@ -88,6 +110,7 @@ public class MatchEventService {
         event.setType(form.getType());
         event.setNotes(clean(form.getNotes()));
         MatchEvent saved = events.save(event);
+        syncToFirestore(saved);
         audit.record(actor, "MATCH_EVENT_CREATED", "MATCH_EVENT", saved.getId(),
                 matchId + ":" + form.getType() + ":" + player.getFullName());
         return saved;
@@ -104,9 +127,44 @@ public class MatchEventService {
         MatchEvent event = events.findById(eventId)
                 .filter(value -> value.getMatch().getId().equals(matchId))
                 .orElseThrow(() -> new IllegalArgumentException("El evento no pertenece al partido."));
-        audit.record(actor, "MATCH_EVENT_REMOVED", "MATCH_EVENT", event.getId(),
+        Long removedId = event.getId();
+        audit.record(actor, "MATCH_EVENT_REMOVED", "MATCH_EVENT", removedId,
                 matchId + ":" + event.getType() + ":" + event.getPlayer().getFullName());
         events.delete(event);
+        deleteFromFirestore(removedId);
+    }
+
+    @SuppressWarnings("null")
+    private void syncToFirestore(MatchEvent event) {
+        if (firestore == null || event == null || event.getId() == null) {
+            return;
+        }
+        try {
+            Map<String, Object> doc = new LinkedHashMap<>();
+            doc.put("id", event.getId());
+            doc.put("matchId", event.getMatch() != null ? event.getMatch().getId() : null);
+            doc.put("teamId", event.getTeam() != null ? event.getTeam().getId() : null);
+            doc.put("playerId", event.getPlayer() != null ? event.getPlayer().getId() : null);
+            doc.put("relatedPlayerId", event.getRelatedPlayer() != null ? event.getRelatedPlayer().getId() : null);
+            doc.put("minute", event.getMinute());
+            doc.put("type", event.getType() != null ? event.getType().name() : null);
+            doc.put("notes", event.getNotes());
+            firestore.collection("match_events").document(java.util.Objects.requireNonNull(String.valueOf(event.getId()))).set(doc);
+        } catch (Exception exception) {
+            LOGGER.warn("No se pudo sincronizar el evento de partido en Firestore.", exception);
+        }
+    }
+
+    @SuppressWarnings("null")
+    private void deleteFromFirestore(Long eventId) {
+        if (firestore == null || eventId == null) {
+            return;
+        }
+        try {
+            firestore.collection("match_events").document(java.util.Objects.requireNonNull(String.valueOf(eventId))).delete();
+        } catch (Exception exception) {
+            LOGGER.warn("No se pudo eliminar el evento de partido en Firestore.", exception);
+        }
     }
 
     private String clean(String value) {

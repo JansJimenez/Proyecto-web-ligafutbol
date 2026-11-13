@@ -558,6 +558,309 @@ textarea.form-control { min-height: 128px; }
 .footer-brand { display: inline-flex; align-items: center; gap: .65rem; color: #fff; font-weight: 800; }
 .footer-brand img { width: 22px; height: 34px; object-fit: contain; }
 
+.copa-stages-strip {
+  padding: 1.35rem 0;
+  border-top: 3px solid var(--gold);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(90deg, #fff 0%, #fffaf0 50%, #fff 100%);
+}
+.stage-step {
+  display: grid;
+  gap: .15rem;
+  padding: .65rem .95rem;
+  border-left: 3px solid var(--red);
+  border-radius: .35rem;
+  background: rgba(255, 255, 255, .85);
+}
+.stage-num {
+  color: var(--red-deep);
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.stage-step strong {
+  color: var(--navy);
+  font-family: Manrope, sans-serif;
+  font-size: .95rem;
+  font-weight: 800;
+}
+.stage-step small {
+  color: var(--muted);
+  font-size: .76rem;
+}
+.stage-pill {
+  display: inline-block;
+  padding: .2rem .58rem;
+  border: 1px solid rgba(215, 184, 92, .55);
+  border-radius: 999px;
+  background: #fffaf0;
+  color: var(--navy);
+  font-size: .72rem;
+  font-weight: 700;
+}
+.score-pill {
+  display: inline-block;
+  min-width: 3.1rem;
+  padding: .24rem .62rem;
+  border-radius: .4rem;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+}
+.table-qualified > td:first-child {
+  border-left: 4px solid var(--red);
+}
+
+/* ==========================================================================
+   Iconos de módulos y navegación
+   ========================================================================== */
+.nav-icon {
+  width: 15px;
+  height: 15px;
+  margin-right: .38rem;
+  vertical-align: -2px;
+  opacity: .88;
+  transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease;
+}
+.site-navigation .site-nav-menu a:hover .nav-icon,
+.site-navigation .site-nav-menu a[aria-current="page"] .nav-icon {
+  transform: scale(1.18) rotate(-4deg);
+  opacity: 1;
+}
+.module-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--red-deep);
+  transition: transform .28s cubic-bezier(.34, 1.56, .64, 1), stroke .22s ease;
+}
+.module-link:hover .module-icon {
+  background: var(--red);
+  border-color: var(--red);
+  box-shadow: 0 8px 18px rgba(223, 23, 50, .24);
+  transform: scale(1.08) rotate(-4deg);
+}
+.module-link:hover .module-icon svg {
+  stroke: #fff;
+  transform: scale(1.1);
+}
+.module-arrow {
+  font-weight: 800;
+  color: var(--muted);
+  transition: transform .22s cubic-bezier(.34, 1.56, .64, 1), color .2s ease;
+}
+.module-link:hover .module-arrow {
+  color: var(--red);
+  transform: translateX(5px);
+}
+.metric-icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: .55rem;
+  background: #fff4f5;
+  color: var(--red);
+  transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), background-color .22s ease;
+}
+.metric-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.metric-card:hover .metric-icon {
+  background: var(--red);
+  color: #fff;
+  transform: scale(1.1) rotate(-6deg);
+}
+.feature-icon {
+  display: inline-grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: #fffaf0;
+  border: 1px solid rgba(215, 184, 92, .45);
+  color: var(--red-deep);
+  transition: transform .28s cubic-bezier(.34, 1.56, .64, 1), background-color .22s ease, color .22s ease;
+}
+.feature-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.feature-card:hover .feature-icon {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+  transform: scale(1.14) rotate(8deg);
+}
+
+/* ==========================================================================
+   Animaciones del Portal del Usuario (Copa Perú Experience)
+   ========================================================================== */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes stadium-glow {
+  0%, 100% {
+    opacity: .14;
+    transform: scale(1);
+  }
+  50% {
+    opacity: .24;
+    transform: scale(1.03);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(223, 23, 50, .38);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(223, 23, 50, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(223, 23, 50, 0);
+  }
+}
+@keyframes row-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero::before {
+  animation: stadium-glow 7s ease-in-out infinite;
+}
+.hero-content .eyebrow {
+  animation: hero-fade-up .65s .15s cubic-bezier(.22, 1, .36, 1) both;
+}
+.hero-content h1 {
+  animation: hero-fade-up .72s .26s cubic-bezier(.22, 1, .36, 1) both;
+}
+.hero-content .lead {
+  animation: hero-fade-up .75s .38s cubic-bezier(.22, 1, .36, 1) both;
+}
+.hero-content .d-flex {
+  animation: hero-fade-up .78s .48s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+/* Efecto de barrido luminoso en botones principales */
+.btn-lime {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.btn-lime::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+  transform: skewX(-24deg);
+  transition: left .55s ease;
+  z-index: -1;
+}
+.btn-lime:hover::after {
+  left: 140%;
+}
+
+/* Etapas de la Copa Perú con micro-interacción */
+.stage-step {
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s cubic-bezier(.22, 1, .36, 1), box-shadow .25s ease, border-color .25s ease;
+}
+.stage-step:hover {
+  transform: translateY(-4px);
+  border-left-color: var(--gold);
+  box-shadow: 0 10px 24px rgba(27, 44, 55, .09);
+}
+.stage-num::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: .4rem;
+  border-radius: 50%;
+  background: var(--red);
+  vertical-align: middle;
+  animation: pulse-ring 2.4s infinite;
+}
+
+/* Tarjetas interactivas con foco dinámico (spotlight) y elevación */
+.club-card, .feature-card, .metric-card, .module-link {
+  position: relative;
+  overflow: hidden;
+}
+.club-card::before, .feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    360px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(223, 23, 50, .065),
+    transparent 65%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+}
+.club-card:hover::before, .feature-card:hover::before {
+  opacity: 1;
+}
+.club-card:hover .club-mark {
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 8px 20px rgba(223, 23, 50, .18);
+}
+.club-mark, .team-crest, .player-photo {
+  transition: transform .28s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s ease;
+}
+.club-card:hover .team-crest,
+.table tbody tr:hover .player-photo,
+.table tbody tr:hover .team-crest {
+  transform: scale(1.1);
+}
+
+/* Animación de entrada al hacer scroll (Scroll Reveal) */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity .58s cubic-bezier(.22, 1, .36, 1),
+    transform .58s cubic-bezier(.22, 1, .36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Filas de tablas con entrada escalonada suave */
+.table tbody tr {
+  animation: row-slide-in .42s cubic-bezier(.22, 1, .36, 1) both;
+}
+.table tbody tr:nth-child(1) { animation-delay: 40ms; }
+.table tbody tr:nth-child(2) { animation-delay: 80ms; }
+.table tbody tr:nth-child(3) { animation-delay: 120ms; }
+.table tbody tr:nth-child(4) { animation-delay: 160ms; }
+.table tbody tr:nth-child(5) { animation-delay: 200ms; }
+.table tbody tr:nth-child(6) { animation-delay: 240ms; }
+.table tbody tr:nth-child(7) { animation-delay: 280ms; }
+.table tbody tr:nth-child(8) { animation-delay: 320ms; }
+
 @media (max-width: 991.98px) {
   .league-nav > .container { flex-wrap: wrap; justify-content: space-between; padding-top: .35rem; padding-bottom: .35rem; }
   .league-nav .navbar-collapse { flex-basis: 100%; }

@@ -67,7 +67,7 @@ public class NewsController {
             return "admin/news/form";
         }
         try {
-            NewsArticle saved = news.save(id, newsForm, principal.getName());
+            news.save(id, newsForm, principal.getName());
             redirect.addFlashAttribute("success", "La noticia se guardó correctamente.");
             return "redirect:/admin/noticias";
         } catch (IllegalArgumentException exception) {

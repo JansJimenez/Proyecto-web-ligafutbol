@@ -41,6 +41,14 @@ public class AuditEntry {
         createdAt = LocalDateTime.now();
     }
 
+    public Long getId() { return id; }
+    public String getActor() { return actor; }
+    public String getAction() { return action; }
+    public String getEntityType() { return entityType; }
+    public Long getEntityId() { return entityId; }
+    public String getDetails() { return details; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+
     public void setActor(String actor) { this.actor = actor; }
     public void setAction(String action) { this.action = action; }
     public void setEntityType(String entityType) { this.entityType = entityType; }
